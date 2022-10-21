@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 //using Polly;
 using System;
 using System.Reflection;
+using ClassifiedAds.Infrastructure.Identity;
+using Supalai.Sale.Services;
 
 namespace Supalai.Sale
 {
@@ -57,8 +59,10 @@ namespace Supalai.Sale
             services.AddHtmlGenerator();
             services.AddDinkToPdfConverter();
 
-           // services.AddProductModule(AppSettings);
-           // services.AddHostedServicesProductModule();
+            services.AddScoped<ISaleService, SaleService>();
+
+            // services.AddProductModule(AppSettings);
+            // services.AddHostedServicesProductModule();
 
             //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             //        .AddJwtBearer(options =>

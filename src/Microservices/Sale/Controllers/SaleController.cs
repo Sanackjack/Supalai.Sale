@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using Supalai.Sale.Services;
 
 namespace Supalai.Sale.Controllers
 {
@@ -8,10 +9,18 @@ namespace Supalai.Sale.Controllers
     [ApiController]
     public class SaleController : ControllerBase
     {
+
+        private readonly ISaleService saleService;
+        public SaleController(ISaleService saleService)
+        {
+            this.saleService = saleService;
+        }
+
         [HttpGet("get/{id}", Name = "GetSaleById")]
         public IActionResult GetSaleById([FromRoute][Required] string id)
         {
-            return new OkObjectResult("Hello world");
+            String result = saleService.GetSaleById(id);
+            return new OkObjectResult(result);
         }
     }
 }
