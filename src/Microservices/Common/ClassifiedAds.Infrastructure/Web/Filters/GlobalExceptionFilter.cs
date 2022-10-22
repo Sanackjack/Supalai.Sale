@@ -1,10 +1,13 @@
-﻿using ClassifiedAds.CrossCuttingConcerns.Exceptions;
+﻿using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
+using ClassifiedAds.CrossCuttingConcerns.Constants;
+using ClassifiedAds.CrossCuttingConcerns.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace ClassifiedAds.Infrastructure.Web.Filters
@@ -12,65 +15,73 @@ namespace ClassifiedAds.Infrastructure.Web.Filters
     public class GlobalExceptionFilter : IExceptionFilter
     {
         private readonly ILogger<GlobalExceptionFilter> _logger;
-        private readonly GlobalExceptionFilterOptions _options;
 
-        public GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger,
-            IOptionsSnapshot<GlobalExceptionFilterOptions> options)
+        public GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger)
         {
             _logger = logger;
-            _options = options.Value;
         }
 
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception is NotFoundException)
+            if (context.Exception != null)
             {
-                context.Result = new NotFoundResult();
-            }
-            else if (context.Exception is ValidationException)
-            {
-                context.Result = new BadRequestObjectResult(context.Exception.Message);
-            }
-            else
-            {
-                _logger.LogError(context.Exception, "[{0}-{1}]", DateTime.UtcNow.Ticks, Thread.CurrentThread.ManagedThreadId);
-
-                if (_options.DetailLevel == GlobalExceptionDetailLevel.Throw)
+                string code = string.Empty;
+                string msg = string.Empty;
+                int httpStatus;
+                switch (context.Exception)
                 {
-                    return;
+                    case AuthenicationErrorException e:
+                        code = e.code;
+                        msg = string.IsNullOrEmpty(e.userName)
+                            ? e.message : string.Format("[{0}]{1}", e.userName, e.message);
+                        httpStatus = e.httpStatus;
+                        break;
+                    case ClientErrorException e:
+                        code = e.code;
+                        msg = e.message;
+                        httpStatus = e.httpStatus;
+                        break;
+                    case ValidationErrorException e:
+                        code = e.code;
+                        msg = string.IsNullOrEmpty(e.massageDetailInValid)
+                            ? e.message : string.Format("{0} The problem is {1}", e.message, e.massageDetailInValid);
+                        httpStatus = e.httpStatus;
+                        break;
+                    case TokenErrorException e:
+                        code = e.code;
+                        msg = e.message;
+                        httpStatus = e.httpStatus;
+                        break;
+                    case ExternalErrorException e:
+                        code = e.code;
+                        msg = string.IsNullOrEmpty(e.partnerName)
+                            ? e.message : string.Format("[{0}]{1}", e.partnerName, e.message);
+                        httpStatus = e.httpStatus;
+                        break;
+                    case SystemErrorException e:
+                        code = e.code;
+                        msg = e.message;
+                        httpStatus = e.httpStatus;
+
+                        if (e.exception != null)
+                        {
+                            _logger.LogError(e.exception, e.exception.Message);
+                        }
+
+                        break;
+                    default:
+                        code = ResponseData.SYSTEM_ERROR.Code;
+                        msg = ResponseData.SYSTEM_ERROR.Message;
+                        httpStatus = ResponseData.SYSTEM_ERROR.HttpStatus;
+                        break;
                 }
 
-                context.Result = new ObjectResult(new { Message = GetErrorMessage(context.Exception) })
+                context.Result = new ObjectResult(new BaseResponse(new StatusResponse(code, msg)))
                 {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    StatusCode = httpStatus
                 };
+                context.ExceptionHandled = true;
             }
         }
-
-        private string GetErrorMessage(Exception ex)
-        {
-            return _options.DetailLevel switch
-            {
-                GlobalExceptionDetailLevel.None => "An internal exception has occurred.",
-                GlobalExceptionDetailLevel.Message => ex.Message,
-                GlobalExceptionDetailLevel.StackTrace => ex.StackTrace,
-                GlobalExceptionDetailLevel.ToString => ex.ToString(),
-                _ => "An internal exception has occurred.",
-            };
-        }
-    }
-
-    public class GlobalExceptionFilterOptions
-    {
-        public GlobalExceptionDetailLevel DetailLevel { get; set; }
-    }
-
-    public enum GlobalExceptionDetailLevel
-    {
-        None,
-        Message,
-        StackTrace,
-        ToString,
-        Throw,
     }
 }
