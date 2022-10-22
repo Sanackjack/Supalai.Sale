@@ -13,4 +13,12 @@
 		<PackageReference Include="System.Text.Json" Version="6.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Remove="BaseResponse\" />
+	  <None Remove="Constants\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="BaseResponse\" />
+	  <Folder Include="Constants\" />
+	</ItemGroup>
 </Project>
