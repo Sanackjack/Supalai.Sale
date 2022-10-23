@@ -61,6 +61,8 @@ namespace Supalai.Sale
 
             services.AddScoped<ISaleService, SaleService>();
 
+            services.AddSwaggerGen();
+
             // services.AddProductModule(AppSettings);
             // services.AddHostedServicesProductModule();
 
@@ -92,6 +94,8 @@ namespace Supalai.Sale
 
             if (env.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
                 app.UseDeveloperExceptionPage();
             }
 
