@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>Sale</AssemblyName>
+    <RootNamespace>Spl.Crm.SaleOrder</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

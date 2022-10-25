@@ -1,5 +1,4 @@
-﻿using System;
-namespace Supalai.Sale.Services
+﻿namespace Spl.Crm.SaleOrder.Services
 {
 	public interface ISaleService
 	{

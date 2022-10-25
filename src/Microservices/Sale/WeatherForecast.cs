@@ -1,4 +1,4 @@
-﻿namespace Sale;
+﻿namespace Spl.Crm.SaleOrder;
 
 public class WeatherForecast
 {

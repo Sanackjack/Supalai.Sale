@@ -1,9 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using Supalai.Sale.Services;
+using Spl.Crm.SaleOrder.Services;
 
-namespace Supalai.Sale.Controllers
+namespace Spl.Crm.SaleOrder.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

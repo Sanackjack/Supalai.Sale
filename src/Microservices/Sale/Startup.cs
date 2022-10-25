@@ -1,21 +1,11 @@
-﻿
-using ClassifiedAds.Infrastructure.DistributedTracing;
+﻿using ClassifiedAds.Infrastructure.DistributedTracing;
 using ClassifiedAds.Infrastructure.Web.Filters;
-using Supalai.Sale.ConfigurationOptions;
+using Spl.Crm.SaleOrder.ConfigurationOptions;
+using Spl.Crm.SaleOrder.Services;
 //using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 //using Polly;
-using System;
-using System.Reflection;
-using ClassifiedAds.Infrastructure.Identity;
-using Supalai.Sale.Services;
 
-namespace Supalai.Sale
+namespace Spl.Crm.SaleOrder
 {
 	public class Startup
 	{

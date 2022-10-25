@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Sale.Controllers;
+namespace Spl.Crm.SaleOrder.Controllers;
 
 [ApiController]
 [Route("[controller]")]
