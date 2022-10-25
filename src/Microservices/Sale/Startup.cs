@@ -1,6 +1,7 @@
 ﻿using ClassifiedAds.Infrastructure.DistributedTracing;
 using ClassifiedAds.Infrastructure.Web.Filters;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
+using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Spl.Crm.SaleOrder.Services;
 //using Microsoft.AspNetCore.Authentication.JwtBearer;
 //using Polly;
@@ -49,7 +50,8 @@ namespace Spl.Crm.SaleOrder
             services.AddHtmlGenerator();
             services.AddDinkToPdfConverter();
 
-            services.AddScoped<ISaleService, SaleService>();
+            services.AddScoped<IAuthService, AuthService>();
+            
 
             services.AddSwaggerGen();
 
