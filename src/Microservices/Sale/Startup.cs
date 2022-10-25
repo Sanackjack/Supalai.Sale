@@ -2,7 +2,10 @@
 using ClassifiedAds.Infrastructure.Web.Filters;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
-//using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 //using Polly;
 
 namespace Spl.Crm.SaleOrder
@@ -56,15 +59,23 @@ namespace Spl.Crm.SaleOrder
 
             // services.AddProductModule(AppSettings);
             // services.AddHostedServicesProductModule();
+            
+            
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => {
+                    options.TokenValidationParameters = new TokenValidationParameters{
+                        ValidateIssuer = true,
+                        ValidIssuer = AppSettings.JwtSettings.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience =AppSettings.JwtSettings.Audience,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSettings.Key)),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
 
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //        .AddJwtBearer(options =>
-            //        {
-            //            options.Authority = AppSettings.IdentityServerAuthentication.Authority;
-            //            options.Audience = AppSettings.IdentityServerAuthentication.ApiName;
-            //            options.RequireHttpsMetadata = AppSettings.IdentityServerAuthentication.RequireHttpsMetadata;
-            //        });
-
+            
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //services.AddDaprClient();

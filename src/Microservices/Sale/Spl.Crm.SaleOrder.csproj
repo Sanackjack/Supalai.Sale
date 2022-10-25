@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
@@ -41,7 +42,6 @@
     <Folder Include="Modules\Project\Service" />
     <Folder Include="Modules\Quotation\Controller" />
     <Folder Include="Modules\Quotation\Service" />
-    <Folder Include="Modules\SalePerson\Controller" />
     <Folder Include="Modules\SalePerson\Service" />
     <Folder Include="Modules\Unit\Controller" />
     <Folder Include="Modules\Unit\Service" />
