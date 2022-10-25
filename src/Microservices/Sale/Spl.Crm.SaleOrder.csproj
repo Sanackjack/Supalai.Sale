@@ -45,7 +45,6 @@
     <Folder Include="Modules\SalePerson\Service" />
     <Folder Include="Modules\Unit\Controller" />
     <Folder Include="Modules\Unit\Service" />
-    <Folder Include="Services\" />
     <Folder Include="ConfigurationOptions\" />
   </ItemGroup>
 </Project>

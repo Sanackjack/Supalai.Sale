@@ -2,7 +2,6 @@
 using ClassifiedAds.Infrastructure.Web.Filters;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
-using Spl.Crm.SaleOrder.Services;
 //using Microsoft.AspNetCore.Authentication.JwtBearer;
 //using Polly;
 
