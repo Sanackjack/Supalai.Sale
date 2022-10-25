@@ -3,21 +3,22 @@ using Microsoft.AspNetCore.Mvc;
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 
+
 namespace Spl.Crm.SaleOrder.Modules.Auth.Controller;
-[Route("api/[controller]")]
+[Route("/spl/api/v1/")]
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService authService;
+    private readonly IAuthService _authservice;
     public AuthController(IAuthService authService)
     {
-        this.authService = authService;
+        this._authservice = authService;
     }
 
-    [HttpGet("get/{id}", Name = "test")]
-    public IActionResult test([FromRoute][Required] string id)
-    {   // Test design structure
-        String result = authService.Login(new LoginRequest());
+    [HttpPost("authentication")]
+    public IActionResult Login([FromBody][Required]LoginRequest account)
+    {   
+        var result = _authservice.Login(new LoginRequest());
         return new OkObjectResult(result);
     }
 }
