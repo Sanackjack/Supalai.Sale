@@ -63,9 +63,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedAds.Services.Iden
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedAds.Services.Notification", "Services.Notification\ClassifiedAds.Services.Notification\ClassifiedAds.Services.Notification.csproj", "{F09154ED-2C3B-4316-834A-E8207AFDDD6D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sale", "Sale", "{2BD99788-4D37-4BC3-A205-E887AD485210}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SaleOrder", "SaleOrder", "{2BD99788-4D37-4BC3-A205-E887AD485210}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Supalai.Sale", "Sale\Supalai.Sale.csproj", "{DDE7E7DC-DBFF-49D9-8EEA-443374C2DAE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spl.Crm.SaleOrder", "Sale\Spl.Crm.SaleOrder.csproj", "{DDE7E7DC-DBFF-49D9-8EEA-443374C2DAE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

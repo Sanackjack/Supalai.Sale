@@ -6,7 +6,7 @@ using ClassifiedAds.Infrastructure.MessageBrokers;
 using ClassifiedAds.Infrastructure.Monitoring;
 using ClassifiedAds.Infrastructure.Storages;
 
-namespace Supalai.Sale.ConfigurationOptions
+namespace Spl.Crm.SaleOrder.ConfigurationOptions
 {
     public class AppSettings
     {

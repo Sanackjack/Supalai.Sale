@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>Sale</AssemblyName>
+    <RootNamespace>Spl.Crm.SaleOrder</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,7 +31,20 @@
     <None Remove="ConfigurationOptions\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Services\" />
+    <Folder Include="Modules\Booking\Controller" />
+    <Folder Include="Modules\Booking\Service" />
+    <Folder Include="Modules\Customer\Controller" />
+    <Folder Include="Modules\Customer\Service" />
+    <Folder Include="Modules\Payment\Controller" />
+    <Folder Include="Modules\Payment\Service" />
+    <Folder Include="Modules\Project\Controller" />
+    <Folder Include="Modules\Project\Service" />
+    <Folder Include="Modules\Quotation\Controller" />
+    <Folder Include="Modules\Quotation\Service" />
+    <Folder Include="Modules\SalePerson\Controller" />
+    <Folder Include="Modules\SalePerson\Service" />
+    <Folder Include="Modules\Unit\Controller" />
+    <Folder Include="Modules\Unit\Service" />
     <Folder Include="ConfigurationOptions\" />
   </ItemGroup>
 </Project>

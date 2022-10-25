@@ -1,8 +1,7 @@
 ﻿using ClassifiedAds.Infrastructure.Logging;
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-namespace Supalai.Sale
+
+namespace Spl.Crm.SaleOrder
 {
     public class Program
     {
