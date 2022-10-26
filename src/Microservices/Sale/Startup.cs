@@ -2,8 +2,11 @@
 using ClassifiedAds.Infrastructure.Web.Filters;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
-//using Microsoft.AspNetCore.Authentication.JwtBearer;
-//using Polly;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace Spl.Crm.SaleOrder
 {
@@ -27,7 +30,13 @@ namespace Spl.Crm.SaleOrder
         public void ConfigureServices(IServiceCollection services)
         {
            // AppSettings.ConnectionStrings.MigrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-
+           services.AddApiVersioning(config =>
+           {
+               config.DefaultApiVersion = new ApiVersion(1, 0);
+               config.AssumeDefaultVersionWhenUnspecified = true;
+               config.ReportApiVersions = true;
+           });
+           
             services.AddControllers(configure =>
             {
                 configure.Filters.Add(typeof(GlobalExceptionFilter));
