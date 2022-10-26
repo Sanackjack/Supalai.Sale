@@ -5,6 +5,7 @@ using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ClassifiedAds.Infrastructure.JWT;
 
 //using Polly;
 
@@ -43,7 +44,8 @@ namespace Spl.Crm.SaleOrder
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             });
-
+            // configure strongly typed settings object
+           /// services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
             services.AddDistributedTracing(AppSettings.DistributedTracing);
 
             services.AddDateTimeProvider();
@@ -51,7 +53,7 @@ namespace Spl.Crm.SaleOrder
 
             services.AddHtmlGenerator();
             services.AddDinkToPdfConverter();
-
+            services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IAuthService, AuthService>();
             
 
@@ -61,19 +63,19 @@ namespace Spl.Crm.SaleOrder
             // services.AddHostedServicesProductModule();
             
             
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
-                    options.TokenValidationParameters = new TokenValidationParameters{
-                        ValidateIssuer = true,
-                        ValidIssuer = AppSettings.JwtSettings.Issuer,
-                        ValidateAudience = true,
-                        ValidAudience =AppSettings.JwtSettings.Audience,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSettings.Key)),
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //     .AddJwtBearer(options => {
+            //         options.TokenValidationParameters = new TokenValidationParameters{
+            //             ValidateIssuer = true,
+            //             ValidIssuer = AppSettings.JwtSettings.Issuer,
+            //             ValidateAudience = true,
+            //             ValidAudience =AppSettings.JwtSettings.Audience,
+            //             ValidateLifetime = true,
+            //             ValidateIssuerSigningKey = true,
+            //             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSettings.Key)),
+            //             ClockSkew = TimeSpan.Zero
+            //         };
+            //     });
 
             
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -107,6 +109,7 @@ namespace Spl.Crm.SaleOrder
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

@@ -1,64 +1,52 @@
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
-
+using ClassifiedAds.Infrastructure.JWT;
+using Microsoft.AspNetCore.Http.Headers;
 namespace Spl.Crm.SaleOrder.Modules.Auth.Service;
 
 public class AuthService : IAuthService
 {
+    private IJwtUtils _jwtUtils;
     private readonly IConfiguration _configuration;
     
-    public AuthService(IConfiguration configuration)
+    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils)
     {
-        this._configuration = configuration;
+        _configuration = configuration;
+        _jwtUtils = jwtUtils;
     }
     public BaseResponse Login(LoginRequest login)
     {
         // validate account LDAP
         // Query Data SPLDB Get info and role
         // build token
-        string token = BuildToken();
-        //terminate session
-
-        LoginResponse response = new LoginResponse();
-        response.token = token;
-        response.refresh_token = token;
-
-        UserInfo userInfo = new UserInfo();
-        userInfo.firstname = "test";
-        userInfo.lastname = "test";
-        userInfo.email = "email";
-        userInfo.user_id = "id";
-        userInfo.username = "username";
-        userInfo.role_name = new string[]{"admin","user"};
-        response.user_info = userInfo;
+       // string token = BuildToken();
         
-        return new BaseResponse(new StatusResponse(), response);
+       var token=_jwtUtils.GenerateJwtToken("supacjai");
+       //terminate session
+        //
+        // LoginResponse response = new LoginResponse();
+        // response.token = token;
+        // response.refresh_token = token;
+        //
+        // UserInfo userInfo = new UserInfo();
+        // userInfo.firstname = "test";
+        // userInfo.lastname = "test";
+        // userInfo.email = "email";
+        // userInfo.user_id = "id";
+        // userInfo.username = "username";
+        // userInfo.role_name = new string[]{"admin","user"};
+        // response.user_info = userInfo;
+        
+        return new BaseResponse(new StatusResponse(), token);
     }
 
-    private string BuildToken()
+    public BaseResponse RefreshToken(string userId)
     {
-        var expires = DateTime.Now.AddHours(Convert.ToDouble(_configuration["JwtSettings:Expire"]));
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]{
-            new Claim(JwtRegisteredClaimNames.Sub, "test"),
-            new Claim("role", "Admin"),
-            new Claim("additional", "todo"),
+        RefreshTokenResponse response = new RefreshTokenResponse()
+        {
+            token = _jwtUtils.GenerateJwtToken(userId),
+            refresh_token = _jwtUtils.GenerateRefreshToken(userId)
         };
-        
-        var token = new JwtSecurityToken(
-            issuer: _configuration["JwtSettings:Issuer"],
-            audience: _configuration["JwtSettings:Audience"],
-            claims: claims,
-            expires: expires,
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return new BaseResponse(new StatusResponse(), response);
     }
 }
