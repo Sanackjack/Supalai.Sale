@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ClassifiedAds.Infrastructure.JWT;
 
-//using Polly;
+
 
 namespace Spl.Crm.SaleOrder
 {
@@ -31,7 +31,13 @@ namespace Spl.Crm.SaleOrder
         public void ConfigureServices(IServiceCollection services)
         {
            // AppSettings.ConnectionStrings.MigrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-
+           services.AddApiVersioning(config =>
+           {
+               config.DefaultApiVersion = new ApiVersion(1, 0);
+               config.AssumeDefaultVersionWhenUnspecified = true;
+               config.ReportApiVersions = true;
+           });
+           
             services.AddControllers(configure =>
             {
                 configure.Filters.Add(typeof(GlobalExceptionFilter));
