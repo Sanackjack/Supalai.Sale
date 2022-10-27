@@ -26,6 +26,8 @@ namespace Spl.Crm.SaleOrder.ConfigurationOptions
         public InterceptorsOptions Interceptors { get; set; }
         
         public JwtSettings JwtSettings { get; set; }
+        
+        public LDAPSettings LDAPSettings { get; set; }
     }
 
     public class ConnectionStrings
@@ -40,6 +42,11 @@ namespace Spl.Crm.SaleOrder.ConfigurationOptions
         public string Issuer { get; set; }
         public string Audience { get; set; }
         public string Expire { get; set; }
+    }
+    public class LDAPSettings{
+        public string LDAPHost { get; set; }
+        public string LDAPPath { get; set; }
+        public string LDAPDomain { get; set; }
     }
 }
 

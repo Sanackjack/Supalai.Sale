@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ClassifiedAds.Infrastructure.JWT;
-
+using ClassifiedAds.Infrastructure.LDAP;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace Spl.Crm.SaleOrder
@@ -60,6 +61,7 @@ namespace Spl.Crm.SaleOrder
             services.AddHtmlGenerator();
             services.AddDinkToPdfConverter();
             services.AddScoped<IJwtUtils, JwtUtils>();
+            services.AddScoped<ILDAPUtils, LDAPUtils>();
             services.AddScoped<IAuthService, AuthService>();
             
 

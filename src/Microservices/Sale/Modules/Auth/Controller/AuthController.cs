@@ -18,9 +18,12 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     [HttpPost("authentication")]
     public IActionResult Login([FromBody][Required]LoginRequest account)
-    {   
+    {
         var result = _authservice.Login(account);
         return new OkObjectResult(result);
+        
+        // var result = _authservice.Login(account);
+        // return new OkObjectResult(result);
     }
     
     [HttpGet("token/refresh")]
