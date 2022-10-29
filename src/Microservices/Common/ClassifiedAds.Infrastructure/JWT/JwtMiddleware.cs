@@ -1,13 +1,6 @@
-using System;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
-using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
-using ClassifiedAds.CrossCuttingConcerns.Constants;
-using ClassifiedAds.CrossCuttingConcerns.Exceptions;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedAds.Infrastructure.JWT;
 

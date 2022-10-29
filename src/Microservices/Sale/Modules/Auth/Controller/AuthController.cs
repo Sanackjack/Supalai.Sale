@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using ClassifiedAds.Infrastructure.JWT;
 using Microsoft.AspNetCore.Mvc;
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
@@ -21,9 +20,6 @@ public class AuthController : BaseApiController
     {
         var result = _authservice.Login(account);
         return new OkObjectResult(result);
-        
-        // var result = _authservice.Login(account);
-        // return new OkObjectResult(result);
     }
     
     [HttpGet("token/refresh")]

@@ -6,13 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Collections.Generic;
-using System.Security.Authentication;
-using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
-using ClassifiedAds.CrossCuttingConcerns.Constants;
-using ClassifiedAds.CrossCuttingConcerns.Exceptions;
 using Microsoft.Extensions.Configuration;
-
-using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedAds.Infrastructure.JWT;
 public interface IJwtUtils

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace ClassifiedAds.Infrastructure.JWT;
+﻿namespace ClassifiedAds.Infrastructure.JWT;
 
 public class TokenInfo
 {
