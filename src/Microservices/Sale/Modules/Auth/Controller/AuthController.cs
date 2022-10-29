@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
+using ClassifiedAds.Infrastructure.JWT;
 using Microsoft.AspNetCore.Mvc;
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Controller;
-[Route("/spl/api/v1/")]
 [ApiController]
 [Authorize]
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly IAuthService _authservice;
     public AuthController(IAuthService authService)
@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     [HttpGet("token/refresh")]
     public IActionResult refreshToken()
     {
-        string userId = HttpContext.Items["UserName"].ToString();
+        string userId = GetUserIdFromContext();
         var response = _authservice.RefreshToken(userId);
         return new OkObjectResult(response);
     }

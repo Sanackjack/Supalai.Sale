@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -5,35 +6,49 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Collections.Generic;
+using System.Security.Authentication;
+using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
+using ClassifiedAds.CrossCuttingConcerns.Constants;
+using ClassifiedAds.CrossCuttingConcerns.Exceptions;
 using Microsoft.Extensions.Configuration;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedAds.Infrastructure.JWT;
 public interface IJwtUtils
 {
     public string GenerateJwtToken(string userId);
-    public string? ValidateJwtToken(string token);
+    public TokenInfo? ValidateJwtToken(string token);
     public string GenerateRefreshToken(string userId);
 }
 
 public class JwtUtils : IJwtUtils
 {
     private readonly IConfiguration _configuration;
-    
+
     public JwtUtils(IConfiguration configuration)
     {
         this._configuration = configuration;
     }
-    
+
     public string GenerateJwtToken(string userId)
     {
-        return BuildToken(Convert.ToDouble(_configuration["JwtSettings:Expire"]),
-            new[] { new Claim("user_id", userId) });
+        List<Claim> claims = BuildCliams(userId, false);
+        return BuildToken(Convert.ToDouble(_configuration["JwtSettings:Expire"]), claims);
     }
 
     public string GenerateRefreshToken(string userId)
     {
-        return BuildToken(Convert.ToDouble(_configuration["JwtSettings:Expire"]) + 4.00f,
-            new[] { new Claim("user_id", userId, "isRefreshToken", "true") });
+        List<Claim> claims = BuildCliams(userId, true);
+        return BuildToken(Convert.ToDouble(_configuration["JwtSettings:Expire"]) + 4.00f, claims);
+    }
+
+    private List<Claim> BuildCliams(string userId, bool isRefreshToken)
+    {
+        List<Claim> claims = new List<Claim>();
+        claims.Add(new Claim(nameof(TokenInfo.user_id), userId));
+        claims.Add(new Claim(nameof(TokenInfo.is_refresh_token), isRefreshToken ? "true" : "false"));
+        return claims;
     }
 
     private string BuildToken(double expire, IEnumerable<Claim> claim)
@@ -49,10 +64,12 @@ public class JwtUtils : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public string? ValidateJwtToken(string token)
+    public TokenInfo? ValidateJwtToken(string token)
     {
         if (token == null)
+        {
             return null;
+        }
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"]);
@@ -69,14 +86,15 @@ public class JwtUtils : IJwtUtils
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = (string)jwtToken.Claims.First(x => x.Type == "user_id").Value;
-
-            // return user id from JWT token if validation successful
-            return userId;
+            TokenInfo tokenInfo = new TokenInfo()
+            {
+                user_id = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.user_id)).Value,
+                is_refresh_token = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.is_refresh_token)).Value,
+            };
+            return tokenInfo;
         }
-        catch
+        catch (Exception e)
         {
-            // return null if validation fails
             return null;
         }
     }

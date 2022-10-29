@@ -1,8 +1,14 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
+using ClassifiedAds.CrossCuttingConcerns.Constants;
+using ClassifiedAds.CrossCuttingConcerns.Exceptions;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
 namespace ClassifiedAds.Infrastructure.JWT;
 
 
@@ -17,15 +23,11 @@ public class JwtMiddleware
     public async Task Invoke(HttpContext context, IJwtUtils jwtUtils)
     {
         var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-        
-        Console.WriteLine("link"+context.Request.GetEncodedUrl());
-        Console.WriteLine("link"+context.Request.GetDisplayUrl());
 
-        var userId = jwtUtils.ValidateJwtToken(token);
-        if (userId != null)
+        var tokenInfo = jwtUtils.ValidateJwtToken(token);
+        if (tokenInfo != null)
         {
-            Console.WriteLine("user"+userId);
-            context.Items["UserName"] = userId;
+            context.Items["TokenInfo"] = tokenInfo;
         }
 
         await _next(context);

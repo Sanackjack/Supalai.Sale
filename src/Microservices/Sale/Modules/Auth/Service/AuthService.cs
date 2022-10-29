@@ -22,37 +22,43 @@ public class AuthService : IAuthService
     public BaseResponse Login(LoginRequest login)
     {
         // validate account LDAP
-        _ldapUtils.CheckUserLoginLdap(login.username, login.password);
-        // Query Data SPLDB Get info and role
+       //  _ldapUtils.CheckUserLoginLdap(login.username, login.password);
+        
+        // Query Data SPLDB Get info and role to userInfo
+        UserInfo userInfo = new UserInfo();
+        userInfo.firstname = "test";
+        userInfo.lastname = "test";
+        userInfo.email = "email";
+        userInfo.user_id = "supachai";
+        userInfo.username = "username";
+        userInfo.role_name = new string[]{"admin","user"};
         // build token
-       // string token = BuildToken();
+        LoginResponse response = new LoginResponse();
+        response.token = _jwtUtils.GenerateJwtToken(userInfo.user_id);;
+        response.refresh_token = _jwtUtils.GenerateRefreshToken(userInfo.user_id);;
+        response.user_info = userInfo;
         
-     //  var token=_jwtUtils.GenerateJwtToken("supacjai");
-       //terminate session
-        //
-        // LoginResponse response = new LoginResponse();
-        // response.token = token;
-        // response.refresh_token = token;
-        //
-        // UserInfo userInfo = new UserInfo();
-        // userInfo.firstname = "test";
-        // userInfo.lastname = "test";
-        // userInfo.email = "email";
-        // userInfo.user_id = "id";
-        // userInfo.username = "username";
-        // userInfo.role_name = new string[]{"admin","user"};
-        // response.user_info = userInfo;
         
-       ///*** return new BaseResponse(new StatusResponse(), token);
-       return new BaseResponse(new StatusResponse(), "");
+        //terminate old session in redis
+        return new BaseResponse(new StatusResponse(), response);
     }
 
     public BaseResponse RefreshToken(string userId)
     {
+        // Query Data SPLDB Get info and role to userInfo
+        UserInfo userInfo = new UserInfo();
+        userInfo.firstname = "test";
+        userInfo.lastname = "test";
+        userInfo.email = "email";
+        userInfo.user_id = "id";
+        userInfo.username = "username";
+        userInfo.role_name = new string[]{"admin","user"};
+        
+        
         RefreshTokenResponse response = new RefreshTokenResponse()
         {
-            token = _jwtUtils.GenerateJwtToken(userId),
-            refresh_token = _jwtUtils.GenerateRefreshToken(userId)
+            token = _jwtUtils.GenerateJwtToken(userInfo.user_id),
+            refresh_token = _jwtUtils.GenerateRefreshToken(userInfo.user_id)
         };
         return new BaseResponse(new StatusResponse(), response);
     }
