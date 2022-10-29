@@ -1,16 +1,19 @@
 ﻿using ClassifiedAds.Infrastructure.DistributedTracing;
 using ClassifiedAds.Infrastructure.Web.Filters;
+using ClassifiedAds.Infrastructure.Middleware;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Http;
+using ClassifiedAds.Infrastructure.Logging;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Spl.Crm.SaleOrder
 {
-	public class Startup
+    public class Startup
 	{
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -29,7 +32,7 @@ namespace Spl.Crm.SaleOrder
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-           // AppSettings.ConnectionStrings.MigrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            // AppSettings.ConnectionStrings.MigrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
            services.AddApiVersioning(config =>
            {
                config.DefaultApiVersion = new ApiVersion(1, 0);
@@ -60,7 +63,6 @@ namespace Spl.Crm.SaleOrder
 
             services.AddScoped<IAuthService, AuthService>();
             
-
             services.AddSwaggerGen();
 
             // services.AddProductModule(AppSettings);
@@ -75,6 +77,8 @@ namespace Spl.Crm.SaleOrder
             //        });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IAppLogger, AppLogger>();
+
 
             //services.AddDaprClient();
         }
@@ -106,10 +110,13 @@ namespace Spl.Crm.SaleOrder
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMiddleware<LogMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 
