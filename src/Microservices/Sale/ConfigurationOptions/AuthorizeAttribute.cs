@@ -28,19 +28,45 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
             {
                 StatusCode = ResponseData.AUTHENTICATION_FAIL.HttpStatus
             };
+            return;
         }
-        else
+        
+        // Check authorization refresh token allow api refresh token only
+        var url = (string)context.HttpContext.Request.GetEncodedUrl();
+        if (!url.Contains("/token/refresh") && "true".Equals(tokenInfo.is_refresh_token) )
         {
-            var url = (string)context.HttpContext.Request.GetEncodedUrl();
-            if (!url.Contains("/token/refresh") && "true".Equals(tokenInfo.is_refresh_token) )
+            context.Result = new ObjectResult(new BaseResponse(new StatusResponse(ResponseData.TOKEN_INVALID.Code, ResponseData.TOKEN_INVALID.Message)))
             {
+                StatusCode = ResponseData.TOKEN_INVALID.HttpStatus
+            };
+            return;
+        }
+        
+        //manage authorize response message
+        ManageErrorTokenEvent(ref context, tokenInfo);
+
+    }
+
+    private static void ManageErrorTokenEvent(ref AuthorizationFilterContext context ,TokenInfo tokenInfo)
+    {
+        switch (tokenInfo.TokenStatus)
+        {
+            case TokenStatus.Expire:
+                context.Result = new ObjectResult(new BaseResponse(new StatusResponse(ResponseData.TOKEN_EXPIRED.Code, ResponseData.TOKEN_EXPIRED.Message)))
+                {
+                    StatusCode = ResponseData.TOKEN_EXPIRED.HttpStatus
+                };
+                break;
+            case TokenStatus.Error:
                 context.Result = new ObjectResult(new BaseResponse(new StatusResponse(ResponseData.TOKEN_INVALID.Code, ResponseData.TOKEN_INVALID.Message)))
                 {
                     StatusCode = ResponseData.TOKEN_INVALID.HttpStatus
                 };
-            }
+                break;
+            default:    
+            break;
         }
 
-
     }
+
 }

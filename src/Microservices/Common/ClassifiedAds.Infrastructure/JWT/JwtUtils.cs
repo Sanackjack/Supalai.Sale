@@ -65,6 +65,7 @@ public class JwtUtils : IJwtUtils
             return null;
         }
 
+        TokenInfo tokenInfo = new TokenInfo();
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"]);
         try
@@ -80,16 +81,22 @@ public class JwtUtils : IJwtUtils
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            TokenInfo tokenInfo = new TokenInfo()
-            {
-                user_id = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.user_id)).Value,
-                is_refresh_token = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.is_refresh_token)).Value,
-            };
+
+            tokenInfo.user_id = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.user_id)).Value;
+            tokenInfo.is_refresh_token =
+                (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.is_refresh_token)).Value;
+            tokenInfo.TokenStatus = TokenStatus.Success;
+            return tokenInfo;
+        }
+        catch (SecurityTokenExpiredException e)
+        {
+            tokenInfo.TokenStatus = TokenStatus.Expire;
             return tokenInfo;
         }
         catch (Exception e)
         {
-            return null;
+            tokenInfo.TokenStatus = TokenStatus.Error;
+            return tokenInfo;
         }
     }
 }
