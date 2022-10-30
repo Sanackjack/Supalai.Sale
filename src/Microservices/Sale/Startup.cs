@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Localization;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 namespace Spl.Crm.SaleOrder
 {
-	public class Startup
+    public class Startup
 	{
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -36,7 +38,29 @@ namespace Spl.Crm.SaleOrder
                config.AssumeDefaultVersionWhenUnspecified = true;
                config.ReportApiVersions = true;
            });
-           
+
+            //services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            services.AddLocalization();
+
+            services.Configure<RequestLocalizationOptions>(
+                opts =>
+                {
+                    /* your configurations*/
+                    var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("en"),
+                        new CultureInfo("ar"),
+                        new CultureInfo("th")
+                    };
+
+                    opts.DefaultRequestCulture = new RequestCulture("en");
+                    // Formatting numbers, dates, etc.
+                    opts.SupportedCultures = supportedCultures;
+                    // UI strings that we have localized.
+                    opts.SupportedUICultures = supportedCultures;
+                });
+
             services.AddControllers(configure =>
             {
                 configure.Filters.Add(typeof(GlobalExceptionFilter));
@@ -59,7 +83,6 @@ namespace Spl.Crm.SaleOrder
             services.AddDinkToPdfConverter();
 
             services.AddScoped<IAuthService, AuthService>();
-            
 
             services.AddSwaggerGen();
 
@@ -91,6 +114,17 @@ namespace Spl.Crm.SaleOrder
             //{
             //    app.MigrateProductDb();
             //});
+
+
+            //var supportedCultures = new[] { "en-US", "ar" };
+            //var localizationOptions =
+            //    new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
+            //    .AddSupportedCultures(supportedCultures)
+            //    .AddSupportedUICultures(supportedCultures);
+            //localizationOptions.ApplyCurrentCultureToResponseHeaders = true;
+            //app.UseRequestLocalization(localizationOptions);
+
+            app.UseRequestLocalization();
 
             if (env.IsDevelopment())
             {
