@@ -31,42 +31,24 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
             return;
         }
         
-        // Check authorization refresh token allow api refresh token only
+        // Check authorization refresh token allow for api refresh token only
         var url = (string)context.HttpContext.Request.GetEncodedUrl();
-        if (!url.Contains("/token/refresh") && "true".Equals(tokenInfo.is_refresh_token) )
+        if (url.Contains("/token/refresh")  )
         {
-            context.Result = new ObjectResult(new BaseResponse(new StatusResponse(ResponseData.TOKEN_INVALID.Code, ResponseData.TOKEN_INVALID.Message)))
-            {
-                StatusCode = ResponseData.TOKEN_INVALID.HttpStatus
-            };
-            return;
-        }
-        
-        //manage authorize response message
-        ManageErrorTokenEvent(ref context, tokenInfo);
-
-    }
-
-    private static void ManageErrorTokenEvent(ref AuthorizationFilterContext context ,TokenInfo tokenInfo)
-    {
-        switch (tokenInfo.TokenStatus)
-        {
-            case TokenStatus.Expire:
-                context.Result = new ObjectResult(new BaseResponse(new StatusResponse(ResponseData.TOKEN_EXPIRED.Code, ResponseData.TOKEN_EXPIRED.Message)))
-                {
-                    StatusCode = ResponseData.TOKEN_EXPIRED.HttpStatus
-                };
-                break;
-            case TokenStatus.Error:
+            if(!tokenInfo.is_refresh_token)
                 context.Result = new ObjectResult(new BaseResponse(new StatusResponse(ResponseData.TOKEN_INVALID.Code, ResponseData.TOKEN_INVALID.Message)))
                 {
                     StatusCode = ResponseData.TOKEN_INVALID.HttpStatus
                 };
-                break;
-            default:    
-            break;
+        }
+        else
+        {
+            if(tokenInfo.is_refresh_token)
+                context.Result = new ObjectResult(new BaseResponse(new StatusResponse(ResponseData.TOKEN_INVALID.Code, ResponseData.TOKEN_INVALID.Message)))
+                {
+                    StatusCode = ResponseData.TOKEN_INVALID.HttpStatus
+                };
         }
 
     }
-
 }

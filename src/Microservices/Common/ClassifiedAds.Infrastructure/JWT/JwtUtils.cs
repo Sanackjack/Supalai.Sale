@@ -6,6 +6,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Collections.Generic;
+using ClassifiedAds.CrossCuttingConcerns.Constants;
+using ClassifiedAds.CrossCuttingConcerns.Exceptions;
 using Microsoft.Extensions.Configuration;
 
 namespace ClassifiedAds.Infrastructure.JWT;
@@ -83,20 +85,17 @@ public class JwtUtils : IJwtUtils
             var jwtToken = (JwtSecurityToken)validatedToken;
 
             tokenInfo.user_id = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.user_id)).Value;
-            tokenInfo.is_refresh_token =
-                (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.is_refresh_token)).Value;
-            tokenInfo.TokenStatus = TokenStatus.Success;
+            tokenInfo.is_refresh_token = bool.Parse(jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.is_refresh_token)).Value.ToString());
             return tokenInfo;
         }
         catch (SecurityTokenExpiredException e)
         {
-            tokenInfo.TokenStatus = TokenStatus.Expire;
-            return tokenInfo;
+
+            throw new AuthenicationErrorException(ResponseData.TOKEN_EXPIRED);
         }
         catch (Exception e)
         {
-            tokenInfo.TokenStatus = TokenStatus.Error;
-            return tokenInfo;
+            throw new AuthenicationErrorException(ResponseData.TOKEN_INVALID);
         }
     }
 }
