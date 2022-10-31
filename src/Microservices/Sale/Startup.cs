@@ -67,25 +67,10 @@ namespace Spl.Crm.SaleOrder
             
 
             services.AddSwaggerGen();
-
+            services.AddSaleOrderModule(AppSettings);
             // services.AddProductModule(AppSettings);
             // services.AddHostedServicesProductModule();
             
-            
-            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //     .AddJwtBearer(options => {
-            //         options.TokenValidationParameters = new TokenValidationParameters{
-            //             ValidateIssuer = true,
-            //             ValidIssuer = AppSettings.JwtSettings.Issuer,
-            //             ValidateAudience = true,
-            //             ValidAudience =AppSettings.JwtSettings.Audience,
-            //             ValidateLifetime = true,
-            //             ValidateIssuerSigningKey = true,
-            //             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSettings.Key)),
-            //             ClockSkew = TimeSpan.Zero
-            //         };
-            //     });
-
             
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
