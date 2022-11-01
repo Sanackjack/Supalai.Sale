@@ -19,4 +19,8 @@ public class SysAdminUserRepository : BaseRepository<SysAdminUser>,ISysAdminUser
     {
         return db.SysAdminUser.Where(x => x.UserId == userId).FirstOrDefault();
     }
+    public void Save()
+    {
+        db.SaveChanges();
+    }
 }
