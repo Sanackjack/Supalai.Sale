@@ -1,6 +1,6 @@
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
-using Spl.Crm.SaleOrder.Entities;
+using ClassifiedAds.Domain.Entities;
 
 namespace Spl.Crm.SaleOrder.Repositories;
 

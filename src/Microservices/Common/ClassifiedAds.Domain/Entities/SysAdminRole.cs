@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace Spl.Crm.SaleOrder.Entities;
+namespace ClassifiedAds.Domain.Entities;
 
 [Table("Sys_Admin_Roles", Schema = "dbo")]
 public class SysAdminRole

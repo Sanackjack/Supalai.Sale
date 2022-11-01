@@ -1,4 +1,6 @@
-namespace Spl.Crm.SaleOrder.Uow;
+using System;
+
+namespace ClassifiedAds.Domain.Uow;
 
 public interface IUnitOfWork : IDisposable
 {

@@ -1,5 +1,6 @@
+using System;
 using Microsoft.EntityFrameworkCore;
-namespace Spl.Crm.SaleOrder.Uow;
+namespace ClassifiedAds.Domain.Uow;
 
 public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : DbContext
 {

@@ -1,8 +1,10 @@
+using ClassifiedAds.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
 using Spl.Crm.SaleOrder.Repositories;
-using Spl.Crm.SaleOrder.Uow;
+using ClassifiedAds.Domain.Uow;
+using IUnitOfWork = ClassifiedAds.Domain.Uow.IUnitOfWork;
 
 namespace Spl.Crm.SaleOrder;
 

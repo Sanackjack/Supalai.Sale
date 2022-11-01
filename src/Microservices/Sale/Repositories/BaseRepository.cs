@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using ClassifiedAds.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;

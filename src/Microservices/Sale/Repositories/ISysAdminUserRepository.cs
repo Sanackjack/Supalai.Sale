@@ -1,4 +1,5 @@
-using Spl.Crm.SaleOrder.Entities;
+using ClassifiedAds.Domain.Repositories;
+using ClassifiedAds.Domain.Entities;
 
 namespace Spl.Crm.SaleOrder.Repositories;
 

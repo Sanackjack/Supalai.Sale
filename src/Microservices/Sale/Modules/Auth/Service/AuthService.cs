@@ -1,13 +1,13 @@
 using System.Transactions;
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
+using ClassifiedAds.Domain.Entities;
 using ClassifiedAds.Infrastructure.JWT;
 using ClassifiedAds.Infrastructure.LDAP;
 using Novell.Directory.Ldap;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
-using Spl.Crm.SaleOrder.Entities;
 using Spl.Crm.SaleOrder.Repositories;
-using Spl.Crm.SaleOrder.Uow;
+using ClassifiedAds.Domain.Uow;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Service;
 
@@ -44,7 +44,7 @@ public class AuthService : IAuthService
                _sysAdminUserRepository.Add(sysAdminUser2);
                
                SysAdminRole sysAdminRole2 = new SysAdminRole();
-             //  sysAdminRole2.RoleId = login.username;
+               sysAdminRole2.RoleId = login.username;
                sysAdminRole2.Description = "test";
                _sysAdminRoleRepository.Add(sysAdminRole2);
                

@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
-namespace Spl.Crm.SaleOrder.Repositories;
+using System.Threading.Tasks;
+namespace ClassifiedAds.Domain.Repositories;
 
 
-public interface IBaseRepository<T> where T : class
+public interface IBaseRepository<T>
+    where T : class
 {
     T GetById(int id);
     Task<T> GetByIdAsync(int id);
@@ -12,7 +16,7 @@ public interface IBaseRepository<T> where T : class
     Task<T> FindAsync(Expression<Func<T, bool>> criteria, string[] includes = null);
     IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, string[] includes = null);
     IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int take, int skip);
-    IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int? take, int? skip, 
+    IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int? take, int? skip,
         Expression<Func<T, object>> orderBy = null, string orderByDirection = "ASC");
 
     Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[] includes = null);

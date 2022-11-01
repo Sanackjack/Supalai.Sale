@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Spl.Crm.SaleOrder.Entities;
+using ClassifiedAds.Domain.Entities;
 using System.Reflection;
 
 namespace Spl.Crm.SaleOrder.DataBaseContextConfig;
