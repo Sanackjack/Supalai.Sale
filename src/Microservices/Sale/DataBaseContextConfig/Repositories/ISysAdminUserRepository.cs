@@ -1,7 +1,7 @@
 using ClassifiedAds.Domain.Repositories;
 using ClassifiedAds.Domain.Entities;
 
-namespace Spl.Crm.SaleOrder.Repositories;
+namespace Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 
 public interface ISysAdminUserRepository: IBaseRepository<SysAdminUser>
 {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
 
-namespace Spl.Crm.SaleOrder.Repositories;
+namespace Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 
 public class BaseRepository<T> : IBaseRepository<T> where T : class
 {

@@ -6,7 +6,7 @@ using ClassifiedAds.Infrastructure.JWT;
 using ClassifiedAds.Infrastructure.LDAP;
 using Novell.Directory.Ldap;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
-using Spl.Crm.SaleOrder.Repositories;
+using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 using ClassifiedAds.Domain.Uow;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Service;
