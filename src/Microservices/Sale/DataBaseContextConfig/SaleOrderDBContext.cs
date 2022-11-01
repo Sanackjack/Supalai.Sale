@@ -4,24 +4,17 @@ using System.Reflection;
 
 namespace Spl.Crm.SaleOrder.DataBaseContextConfig;
 
-public class SaleOrderDbContext : DbContext
+public class SaleOrderDBContext : DbContext
 {
-    public SaleOrderDbContext()
+    public SaleOrderDBContext()
     {
     }
-    public SaleOrderDbContext(DbContextOptions<SaleOrderDbContext> options) : base(options)
+    public SaleOrderDBContext(DbContextOptions<SaleOrderDBContext> options) : base(options)
     {
     }
     
     public DbSet<SysAdminUser> SysAdminUser { get; set; }
-    
-    
-    // protected override void OnModelCreating(ModelBuilder builder)
-    // {
-    //     base.OnModelCreating(builder);
-    //     builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-    // }
-
+    public DbSet<SysAdminRole> SysAdminRole { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // modelBuilder.Entity<SysAdminUser>()

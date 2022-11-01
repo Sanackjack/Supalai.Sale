@@ -19,5 +19,4 @@ public class SysAdminUser
     public string? PasswordQuestion { get; set; }
     public string? PasswordAnswer { get; set; }
 
-        
 }

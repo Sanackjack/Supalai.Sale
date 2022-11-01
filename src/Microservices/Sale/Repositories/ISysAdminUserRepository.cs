@@ -6,5 +6,5 @@ public interface ISysAdminUserRepository: IBaseRepository<SysAdminUser>
 {
     SysAdminUser FindByUserName(string userName);
     SysAdminUser FindByUserId(string userId);
-    void Save();
+    void SaveChange();
 }

@@ -7,6 +7,7 @@ using Novell.Directory.Ldap;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
 using Spl.Crm.SaleOrder.Entities;
 using Spl.Crm.SaleOrder.Repositories;
+using Spl.Crm.SaleOrder.Uow;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Service;
 
@@ -16,13 +17,17 @@ public class AuthService : IAuthService
     private ILDAPUtils _ldapUtils;
     private readonly IConfiguration _configuration;
     private readonly ISysAdminUserRepository _sysAdminUserRepository;
+    private readonly ISysAdminRoleRepository _sysAdminRoleRepository;
+    private readonly IUnitOfWork _uow;
     
-    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository)
+    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository)
     {
         _configuration = configuration;
         _jwtUtils = jwtUtils;
         _ldapUtils = ldapUtils;
         _sysAdminUserRepository = sysAdminUserRepository;
+        _uow = uow;
+        _sysAdminRoleRepository = sysAdminRoleRepository;
     }
 
     public BaseResponse Login(LoginRequest login)
@@ -33,15 +38,17 @@ public class AuthService : IAuthService
        // Query Data SPLDB Get info and role to userInfo
        try
        {
-           using (TransactionScope scope = new TransactionScope())
-           {
                SysAdminUser sysAdminUser2 = new SysAdminUser();
                sysAdminUser2.UserId = login.username;
                sysAdminUser2.Password = "test";
                _sysAdminUserRepository.Add(sysAdminUser2);
-               _sysAdminUserRepository.Save();
-               scope.Complete();
-           }
+               
+               SysAdminRole sysAdminRole2 = new SysAdminRole();
+             //  sysAdminRole2.RoleId = login.username;
+               sysAdminRole2.Description = "test";
+               _sysAdminRoleRepository.Add(sysAdminRole2);
+               
+               _uow.SaveChanges();
        }
        catch (Exception e)
        {

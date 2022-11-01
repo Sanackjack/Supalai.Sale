@@ -6,7 +6,7 @@ namespace Spl.Crm.SaleOrder.Repositories;
 
 public class SysAdminUserRepository : BaseRepository<SysAdminUser>,ISysAdminUserRepository
 {
-    public SysAdminUserRepository(SaleOrderDbContext db) : base(db)
+    public SysAdminUserRepository(SaleOrderDBContext db) : base(db)
     {
     }
 
@@ -19,7 +19,7 @@ public class SysAdminUserRepository : BaseRepository<SysAdminUser>,ISysAdminUser
     {
         return db.SysAdminUser.Where(x => x.UserId == userId).FirstOrDefault();
     }
-    public void Save()
+    public void SaveChange()
     {
         db.SaveChanges();
     }
