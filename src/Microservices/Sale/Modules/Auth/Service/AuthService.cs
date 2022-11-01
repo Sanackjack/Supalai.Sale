@@ -1,6 +1,8 @@
 using System.Transactions;
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
+using ClassifiedAds.CrossCuttingConcerns.Constants;
+using ClassifiedAds.CrossCuttingConcerns.Exceptions;
 using ClassifiedAds.Domain.Entities;
 using ClassifiedAds.Infrastructure.JWT;
 using ClassifiedAds.Infrastructure.LDAP;
@@ -36,31 +38,15 @@ public class AuthService : IAuthService
         // validate account LDAP
         // _ldapUtils.CheckUserLoginLdap(login.username, login.password);
         
-       // Query Data SPLDB Get info and role to userInfo
-       try
-       {
-               SysAdminUser sysAdminUser2 = new SysAdminUser();
-               sysAdminUser2.UserId = login.username;
-               sysAdminUser2.Password = "test";
-               //_sysAdminUserRepository.Add(sysAdminUser2);
-               
-               SysAdminRole sysAdminRole2 = new SysAdminRole();
-               sysAdminRole2.RoleId = login.username;
-               sysAdminRole2.Description = "test";
-               //_sysAdminRoleRepository.Add(sysAdminRole2);
-               
-              // _uow.SaveChanges();
-       }
-       catch (Exception e)
-       {
-           Console.WriteLine("error scope");
-           throw;
-       }
-     //  SysAdminUser sysAdminUser = _sysAdminUserRepository.FindRawSqlUserName(login.username);
+       //check user should has in DB
+       // SysAdminUser sysAdminUser = _sysAdminUserRepository.FindByUserName(login.username);
+       // if (sysAdminUser == null)
+       //     throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
+       //
        
-       SysUserInfo sysAdminUser22 = _sysAdminUserRepository.findSysUserInfoRawSqlByUserId(login.username);
-        
-        UserInfo userInfo = new UserInfo();
+       // Query Data SPLDB Get info and role to userInfo
+       SysUserInfo sysUserinfo = _sysAdminUserRepository.findSysUserInfoRawSqlByUserId(login.username);
+       UserInfo userInfo = new UserInfo();
         userInfo.firstname = "firstname";
         userInfo.lastname = "firstname";
         userInfo.email = "spl@gmail.com";
