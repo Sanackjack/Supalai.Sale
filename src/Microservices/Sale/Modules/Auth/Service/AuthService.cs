@@ -8,6 +8,7 @@ using Novell.Directory.Ldap;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 using ClassifiedAds.Domain.Uow;
+using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Service;
 
@@ -41,21 +42,23 @@ public class AuthService : IAuthService
                SysAdminUser sysAdminUser2 = new SysAdminUser();
                sysAdminUser2.UserId = login.username;
                sysAdminUser2.Password = "test";
-               _sysAdminUserRepository.Add(sysAdminUser2);
+               //_sysAdminUserRepository.Add(sysAdminUser2);
                
                SysAdminRole sysAdminRole2 = new SysAdminRole();
                sysAdminRole2.RoleId = login.username;
                sysAdminRole2.Description = "test";
-               _sysAdminRoleRepository.Add(sysAdminRole2);
+               //_sysAdminRoleRepository.Add(sysAdminRole2);
                
-               _uow.SaveChanges();
+              // _uow.SaveChanges();
        }
        catch (Exception e)
        {
            Console.WriteLine("error scope");
            throw;
        }
-       SysAdminUser sysAdminUser = _sysAdminUserRepository.FindByUserName(login.username);
+     //  SysAdminUser sysAdminUser = _sysAdminUserRepository.FindRawSqlUserName(login.username);
+       
+       SysUserInfo sysAdminUser22 = _sysAdminUserRepository.findSysUserInfoRawSqlByUserId(login.username);
         
         UserInfo userInfo = new UserInfo();
         userInfo.firstname = "firstname";
