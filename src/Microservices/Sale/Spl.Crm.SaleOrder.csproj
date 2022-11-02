@@ -34,6 +34,7 @@
     <None Remove="ConfigurationOptions\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Cache\Redis\Configuration\" />
     <Folder Include="Modules\Booking\Controller" />
     <Folder Include="Modules\Booking\Service" />
     <Folder Include="Modules\Customer\Controller" />

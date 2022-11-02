@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-
+using Spl.Crm.SaleOrder.Cache.Redis.Service.implement;
+using Spl.Crm.SaleOrder.Cache.Redis.Service;
+using System.Reflection;
 
 namespace Spl.Crm.SaleOrder
 {
-	public class Startup
+    public class Startup
 	{
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -59,7 +61,13 @@ namespace Spl.Crm.SaleOrder
             services.AddDinkToPdfConverter();
 
             services.AddScoped<IAuthService, AuthService>();
-            
+
+            //services.AddScoped<IRedisCacheService, RedisCacheService>();
+            services.AddScoped<IMasterConfigCacheService, MasterConfigCacheService>();
+            services.AddScoped<IUserCacheService, UserCacheService>();
+            //services.AddScoped<UserCacheService>();
+
+            services.AddCaches(AppSettings.Caching);
 
             services.AddSwaggerGen();
 
