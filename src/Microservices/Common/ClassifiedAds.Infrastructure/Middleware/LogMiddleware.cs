@@ -73,7 +73,10 @@ namespace ClassifiedAds.Infrastructure.Middleware
             }
             var body = form != null ? Newtonsoft.Json.JsonConvert.SerializeObject(form) : formString;
 
-            _logger.Info("[Request] " + body);
+            string controller = (string)context.Request.RouteValues["controller"];
+            string action = (string)context.Request.RouteValues["action"];
+
+            _logger.Info("[Request] " + body, controller + "." + action);
 
         }
 
@@ -101,7 +104,10 @@ namespace ClassifiedAds.Infrastructure.Middleware
 
                     watch.Stop();
 
-                    _logger.Info("[Response] " + responseBody);
+                    string controller = (string)context.Request.RouteValues["controller"];
+                    string action = (string)context.Request.RouteValues["action"];
+
+                    _logger.Info("[Response] " + responseBody, controller + "." + action);
 
                     memStream.Position = 0;
                     await memStream.CopyToAsync(originalBody);
