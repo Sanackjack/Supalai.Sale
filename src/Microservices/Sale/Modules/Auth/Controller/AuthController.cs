@@ -14,17 +14,12 @@ namespace Spl.Crm.SaleOrder.Modules.Auth.Controller;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService authService;
-    private readonly IStringLocalizer<AuthController> stringLocalizer;
+    private readonly IStringLocalizer<LocalizeResource> localizer;
 
-    private readonly IStringLocalizer<SharedResource> sharedResourceLocalizer;
-
-    public AuthController(IAuthService authService, IStringLocalizer<AuthController> postsControllerLocalizer,
-        IStringLocalizer<SharedResource> sharedResourceLocalizer)
+    public AuthController(IAuthService authService, IStringLocalizer<LocalizeResource> localizeResource)
     {
         this.authService = authService;
-        this.stringLocalizer = postsControllerLocalizer;
-
-        this.sharedResourceLocalizer = sharedResourceLocalizer;
+        this.localizer = localizeResource;
     }
 
     [HttpGet("get/{id}", Name = "test")]
@@ -40,10 +35,11 @@ public class AuthController : ControllerBase
     public IActionResult localize()
     {
 
-        var article = sharedResourceLocalizer["Article"];
-        var postName = sharedResourceLocalizer.GetString("Welcome").Value ?? "";
+        var article = localizer["Article"];
+        var postName = localizer.GetString("Welcome").Value ?? "";
 
         return Ok(new { PostType = article.Value, PostName = postName });
+
     }
 
 }

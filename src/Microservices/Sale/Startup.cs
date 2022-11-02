@@ -39,14 +39,10 @@ namespace Spl.Crm.SaleOrder
                config.ReportApiVersions = true;
            });
 
-            //services.AddLocalization(options => options.ResourcesPath = "Resources");
-
             services.AddLocalization();
-
             services.Configure<RequestLocalizationOptions>(
                 opts =>
                 {
-                    /* your configurations*/
                     var supportedCultures = new List<CultureInfo>
                     {
                         new CultureInfo("en"),
@@ -55,9 +51,7 @@ namespace Spl.Crm.SaleOrder
                     };
 
                     opts.DefaultRequestCulture = new RequestCulture("en");
-                    // Formatting numbers, dates, etc.
                     opts.SupportedCultures = supportedCultures;
-                    // UI strings that we have localized.
                     opts.SupportedUICultures = supportedCultures;
                 });
 
@@ -114,15 +108,6 @@ namespace Spl.Crm.SaleOrder
             //{
             //    app.MigrateProductDb();
             //});
-
-
-            //var supportedCultures = new[] { "en-US", "ar" };
-            //var localizationOptions =
-            //    new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
-            //    .AddSupportedCultures(supportedCultures)
-            //    .AddSupportedUICultures(supportedCultures);
-            //localizationOptions.ApplyCurrentCultureToResponseHeaders = true;
-            //app.UseRequestLocalization(localizationOptions);
 
             app.UseRequestLocalization();
 
