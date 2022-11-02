@@ -13,9 +13,11 @@ namespace Spl.Crm.SaleOrder
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseClassifiedAdsLogger(configuration =>
+                .ConfigureLogging(builder =>
                 {
-                    return new LoggingOptions();
+                    builder.AddConsole()
+                        .AddConsoleFormatter
+                            <CustomTimePrefixingFormatter, CustomWrappingConsoleFormatterOptions>();
                 });
     }
 

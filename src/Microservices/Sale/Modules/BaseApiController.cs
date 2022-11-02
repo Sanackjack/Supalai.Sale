@@ -8,6 +8,7 @@ public class BaseApiController : ControllerBase
     [HttpGet]
     public string GetUserIdFromContext()
     {
-       return HttpContext.Items["UserName"] !=null ? HttpContext.Items["UserName"].ToString():"Anonymous";
+        return HttpContext.Items["UserName"] != null ? HttpContext.Items["UserName"].ToString() : "Anonymous";
     }
+
 }

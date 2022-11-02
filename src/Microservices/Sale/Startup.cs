@@ -1,5 +1,6 @@
 ﻿using ClassifiedAds.Infrastructure.DistributedTracing;
 using ClassifiedAds.Infrastructure.Web.Filters;
+using ClassifiedAds.Infrastructure.Middleware;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Http;
+using ClassifiedAds.Infrastructure.Logging;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Spl.Crm.SaleOrder
 {
@@ -31,7 +35,7 @@ namespace Spl.Crm.SaleOrder
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-           // AppSettings.ConnectionStrings.MigrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            // AppSettings.ConnectionStrings.MigrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
            services.AddApiVersioning(config =>
            {
                config.DefaultApiVersion = new ApiVersion(1, 0);
@@ -92,6 +96,8 @@ namespace Spl.Crm.SaleOrder
             //        });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IAppLogger, AppLogger>();
+
 
             //services.AddDaprClient();
         }
@@ -125,10 +131,13 @@ namespace Spl.Crm.SaleOrder
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMiddleware<LogMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 
