@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using ClassifiedAds.Infrastructure.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -39,7 +42,23 @@ namespace Spl.Crm.SaleOrder
                config.AssumeDefaultVersionWhenUnspecified = true;
                config.ReportApiVersions = true;
            });
-           
+
+            services.AddLocalization();
+            services.Configure<RequestLocalizationOptions>(
+                opts =>
+                {
+                    var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("en"),
+                        new CultureInfo("ar"),
+                        new CultureInfo("th")
+                    };
+
+                    opts.DefaultRequestCulture = new RequestCulture("en");
+                    opts.SupportedCultures = supportedCultures;
+                    opts.SupportedUICultures = supportedCultures;
+                });
+
             services.AddControllers(configure =>
             {
                 configure.Filters.Add(typeof(GlobalExceptionFilter));
@@ -62,7 +81,7 @@ namespace Spl.Crm.SaleOrder
             services.AddDinkToPdfConverter();
 
             services.AddScoped<IAuthService, AuthService>();
-            
+
             services.AddSwaggerGen();
 
             // services.AddProductModule(AppSettings);
@@ -95,6 +114,8 @@ namespace Spl.Crm.SaleOrder
             //{
             //    app.MigrateProductDb();
             //});
+
+            app.UseRequestLocalization();
 
             if (env.IsDevelopment())
             {
