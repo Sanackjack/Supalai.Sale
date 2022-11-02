@@ -15,6 +15,7 @@ public static class SaleOrderModuleServiceCollectionExtensions
         services.AddTransient(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddTransient<ISysAdminUserRepository, SysAdminUserRepository>();
         services.AddTransient<ISysAdminRoleRepository, SysAdminRoleRepository>();
+        services.AddTransient<ISaleOrderRepository, SaleOrderRepository>();
 
         services.AddDbContext<SaleOrderDBContext>(options =>
             options.UseSqlServer(
