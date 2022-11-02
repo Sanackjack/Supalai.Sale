@@ -1,13 +1,9 @@
-using System.Transactions;
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
 using ClassifiedAds.CrossCuttingConcerns.Constants;
 using ClassifiedAds.CrossCuttingConcerns.Exceptions;
-using ClassifiedAds.Domain.Entities;
 using ClassifiedAds.Infrastructure.JWT;
 using ClassifiedAds.Infrastructure.LDAP;
-using Novell.Directory.Ldap;
-using Spl.Crm.SaleOrder.DataBaseContextConfig;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 using ClassifiedAds.Domain.Uow;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
@@ -21,37 +17,31 @@ public class AuthService : IAuthService
     private readonly IConfiguration _configuration;
     private readonly ISysAdminUserRepository _sysAdminUserRepository;
     private readonly ISysAdminRoleRepository _sysAdminRoleRepository;
+    private readonly ISaleOrderRepository _saleOrderRepository;
     private readonly IUnitOfWork _uow;
     
-    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository)
+    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository, ISaleOrderRepository saleOrderRepository)
     {
         _configuration = configuration;
         _jwtUtils = jwtUtils;
         _ldapUtils = ldapUtils;
         _sysAdminUserRepository = sysAdminUserRepository;
-        _uow = uow;
         _sysAdminRoleRepository = sysAdminRoleRepository;
+        _saleOrderRepository = saleOrderRepository;
+        _uow = uow;
     }
 
     public BaseResponse Login(LoginRequest login)
     {
         //validate account LDAP
-        //** _ldapUtils.CheckUserLoginLdap(login.username, login.password);
+        _ldapUtils.CheckUserLoginLdap(login.username, login.password);
         
        //check user should has in DB
-       SysUserInfo? sysUserinfo = _sysAdminUserRepository.FindSysUserInfoRawSqlByUserName(login.username);
+       SysUserInfo? sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(login.username);
        if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
-
-       UserInfo userInfo = new UserInfo()
-       {
-           firstname = sysUserinfo.FirstName,
-           lastname = sysUserinfo.LastName,
-           email = sysUserinfo.Email,
-           user_id = sysUserinfo.UserId,
-           username = sysUserinfo.Username,
-           role_name = new string[] { sysUserinfo.RoleName }
-       };
+       
+       UserInfo userInfo = BuildUserInfo(sysUserinfo);
        
         // build token jwt
         TokenInfo tokenInfo = BuildTokenInfo(userInfo);
@@ -68,20 +58,11 @@ public class AuthService : IAuthService
     public BaseResponse RefreshToken(TokenInfo token)
     {
         //check user should has in DB
-        SysUserInfo? sysUserinfo = _sysAdminUserRepository.FindSysUserInfoRawSqlByUserName(token.username);
+        SysUserInfo? sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(token.username);
         if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
-
-        UserInfo userInfo = new UserInfo()
-        {
-            firstname = sysUserinfo.FirstName,
-            lastname = sysUserinfo.LastName,
-            email = sysUserinfo.Email,
-            user_id = sysUserinfo.UserId,
-            username = sysUserinfo.Username,
-            role_name = new string[] { sysUserinfo.RoleName }
-        };
-       
+        UserInfo userInfo = BuildUserInfo(sysUserinfo);
+        
         // build token jwt
         TokenInfo tokenInfo = BuildTokenInfo(userInfo);
         RefreshTokenResponse response = new RefreshTokenResponse()
@@ -105,5 +86,18 @@ public class AuthService : IAuthService
                         username = userInfo.username,
                         role = userInfo.role_name
                     };
+    }
+    
+    private UserInfo BuildUserInfo(SysUserInfo sysUserinfo)
+    {
+        return   new UserInfo()
+        {
+            firstname = sysUserinfo.FirstName,
+            lastname = sysUserinfo.LastName,
+            email = sysUserinfo.Email,
+            user_id = sysUserinfo.UserId,
+            username = sysUserinfo.Username,
+            role_name = new string[] { sysUserinfo.RoleName }
+        };
     }
 }

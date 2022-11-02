@@ -8,10 +8,5 @@ public interface ISysAdminUserRepository: IBaseRepository<SysAdminUser>
 {
     SysAdminUser FindByUserName(string userName);
     SysAdminUser FindByUserId(string userId);
-    SysAdminUser FindRawSqlUserName(string userId);
-    
-    SysUserInfo? FindSysUserInfoRawSqlByUserName(string userName);
-    
-    
     void SaveChange();
 }
