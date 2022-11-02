@@ -6,13 +6,15 @@ namespace Spl.Crm.SaleOrder.Modules;
 [Route("spl/api/v{version:apiVersion}")]
 public class BaseApiController : ControllerBase
 {
+    [HttpGet]
     public string GetUserIdFromContext()
-    {
-        TokenInfo? tokenInfo = (TokenInfo)HttpContext.Items["TokenInfo"]!;
+    { 
+       TokenInfo? tokenInfo = (TokenInfo)HttpContext.Items["TokenInfo"]!;
        return tokenInfo !=null ? tokenInfo.user_id:"Anonymous";
     }
     public TokenInfo GetTokenInfoFromContext()
     {
         return (TokenInfo)HttpContext.Items["TokenInfo"]!;
     }
+
 }
