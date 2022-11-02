@@ -6,6 +6,9 @@ using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ClassifiedAds.Infrastructure.JWT;
+using ClassifiedAds.Infrastructure.LDAP;
+using ClassifiedAds.Infrastructure.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
@@ -71,7 +74,8 @@ namespace Spl.Crm.SaleOrder
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             });
-
+            // configure strongly typed settings object
+           /// services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
             services.AddDistributedTracing(AppSettings.DistributedTracing);
 
             services.AddDateTimeProvider();
@@ -79,22 +83,16 @@ namespace Spl.Crm.SaleOrder
 
             services.AddHtmlGenerator();
             services.AddDinkToPdfConverter();
-
+            services.AddScoped<IJwtUtils, JwtUtils>();
+            services.AddScoped<ILDAPUtils, LDAPUtils>();
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddSwaggerGen();
-
+            services.AddSaleOrderModule(AppSettings);
             // services.AddProductModule(AppSettings);
             // services.AddHostedServicesProductModule();
-
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //        .AddJwtBearer(options =>
-            //        {
-            //            options.Authority = AppSettings.IdentityServerAuthentication.Authority;
-            //            options.Audience = AppSettings.IdentityServerAuthentication.ApiName;
-            //            options.RequireHttpsMetadata = AppSettings.IdentityServerAuthentication.RequireHttpsMetadata;
-            //        });
-
+            
+            
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IAppLogger, AppLogger>();
 
@@ -128,8 +126,15 @@ namespace Spl.Crm.SaleOrder
 
             app.UseCors("AllowAnyOrigin");
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            // app.UseAuthentication();
+            // app.UseAuthorization();
+            
+            // global error handler
+            //app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+            app.UseGlobalExceptionHandlerMiddleware();
+            app.UseMiddleware<JwtMiddleware>();
+            
+            
 
             app.UseMiddleware<LogMiddleware>();
 

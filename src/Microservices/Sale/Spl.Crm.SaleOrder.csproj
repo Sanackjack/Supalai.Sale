@@ -9,8 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-
-
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Novell.Directory.Ldap.NETStandard" Version="3.6.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
@@ -46,7 +54,6 @@
     <Folder Include="Modules\Project\Service" />
     <Folder Include="Modules\Quotation\Controller" />
     <Folder Include="Modules\Quotation\Service" />
-    <Folder Include="Modules\SalePerson\Controller" />
     <Folder Include="Modules\SalePerson\Service" />
     <Folder Include="Modules\Unit\Controller" />
     <Folder Include="Modules\Unit\Service" />

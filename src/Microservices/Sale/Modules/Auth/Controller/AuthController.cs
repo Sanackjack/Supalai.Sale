@@ -8,33 +8,42 @@ using Microsoft.Extensions.Localization;
 using Spl.Crm.SaleOrder;
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
+using Spl.Crm.SaleOrder.ConfigurationOptions;
 using ClassifiedAds.Application;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Controller;
-[Route("api/[controller]")]
 [ApiController]
-public class AuthController : ControllerBase
+[Authorize]
+public class AuthController : BaseApiController
 {
+    private readonly IAuthService _authservice;
     private readonly IAppLogger _logger;
     private readonly IStringLocalizer<LocalizeResource> localizer;
-    private readonly IAuthService authService;
-
     public AuthController(IAppLogger _logger,
                             IStringLocalizer<LocalizeResource> localizeResource
-                                ,IAuthService authService)
+                                ,IAuthService authService, IAuthService authservice)
     {
         this._logger = _logger ;
         this.localizer = localizeResource;
-        this.authService = authService;
+        _authservice = authservice;
+        this._authservice = authService;
     }
-
-    [HttpGet("get/{id}", Name = "test")]
-    public IActionResult test([FromRoute][Required] string id)
-    {   // Test design structure
-        String result = authService.Login(new LoginRequest());
+    [AllowAnonymous]
+    [HttpPost("authentication")]
+    public IActionResult Login([FromBody][Required]LoginRequest account)
+    {
+        var result = _authservice.Login(account);
         return new OkObjectResult(result);
     }
-    
+
+    [HttpGet("token/refresh")]
+    public IActionResult refreshToken()
+    {
+        var token = GetTokenInfoFromContext();
+        var response = _authservice.RefreshToken(token);
+        return new OkObjectResult(response);
+    }
+
     [HttpGet]
     [Route("localize")]
     public IActionResult localize()
@@ -43,6 +52,5 @@ public class AuthController : ControllerBase
         var article = localizer["Article"]; 
         _logger.Debug("Hello from GetLog");
         return Ok(new { PostType = article.Value });
-
     }
 }

@@ -17,16 +17,17 @@ namespace Spl.Crm.SaleOrder.ConfigurationOptions
         public CachingOptions Caching { get; set; }
 
         public MonitoringOptions Monitoring { get; set; }
-
         public DistributedTracingOptions DistributedTracing { get; set; }
-
-        public IdentityServerAuthentication IdentityServerAuthentication { get; set; }
-
+        
         public StorageOptions Storage { get; set; }
 
         public MessageBrokerOptions MessageBroker { get; set; }
 
         public InterceptorsOptions Interceptors { get; set; }
+        
+        public JwtSettings JwtSettings { get; set; }
+        
+        public LDAPSettings LDAPSettings { get; set; }
     }
 
     public class ConnectionStrings
@@ -36,13 +37,16 @@ namespace Spl.Crm.SaleOrder.ConfigurationOptions
         public string MigrationsAssembly { get; set; }
     }
 
-    public class IdentityServerAuthentication
-    {
-        public string Authority { get; set; }
-
-        public string ApiName { get; set; }
-
-        public bool RequireHttpsMetadata { get; set; }
+    public class JwtSettings{
+        public string Key { get; set; }
+        public string Issuer { get; set; }
+        public string Audience { get; set; }
+        public string Expire { get; set; }
+    }
+    public class LDAPSettings{
+        public string LDAPHost { get; set; }
+        public string LDAPPath { get; set; }
+        public string LDAPDomain { get; set; }
     }
 }
 

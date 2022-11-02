@@ -1,3 +1,4 @@
+using ClassifiedAds.Infrastructure.JWT;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Spl.Crm.SaleOrder.Modules;
@@ -7,8 +8,13 @@ public class BaseApiController : ControllerBase
 {
     [HttpGet]
     public string GetUserIdFromContext()
+    { 
+       TokenInfo? tokenInfo = (TokenInfo)HttpContext.Items["TokenInfo"]!;
+       return tokenInfo !=null ? tokenInfo.user_id:"Anonymous";
+    }
+    public TokenInfo GetTokenInfoFromContext()
     {
-        return HttpContext.Items["UserName"] != null ? HttpContext.Items["UserName"].ToString() : "Anonymous";
+        return (TokenInfo)HttpContext.Items["TokenInfo"]!;
     }
 
 }

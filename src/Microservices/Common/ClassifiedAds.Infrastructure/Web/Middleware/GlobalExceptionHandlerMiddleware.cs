@@ -6,6 +6,8 @@ using System.Net;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
+using ClassifiedAds.CrossCuttingConcerns.Constants;
 
 namespace ClassifiedAds.Infrastructure.Web.Middleware
 {
@@ -34,22 +36,60 @@ namespace ClassifiedAds.Infrastructure.Web.Middleware
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
-
+                string code = string.Empty;
+                string msg = string.Empty;
+                int httpStatus;
                 switch (ex)
                 {
-                    case ValidationException:
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    case AuthenicationErrorException e:
+                        code = e.code;
+                        msg = string.IsNullOrEmpty(e.userName)
+                            ? e.message : string.Format("[{0}]{1}", e.userName, e.message);
+                        httpStatus = e.httpStatus;
                         break;
-                    case NotFoundException:
-                        response.StatusCode = (int)HttpStatusCode.NotFound;
+                    case ClientErrorException e:
+                        code = e.code;
+                        msg = e.message;
+                        httpStatus = e.httpStatus;
+                        break;
+                    case ValidationErrorException e:
+                        code = e.code;
+                        msg = string.IsNullOrEmpty(e.massageDetailInValid)
+                            ? e.message : string.Format("{0} The problem is {1}", e.message, e.massageDetailInValid);
+                        httpStatus = e.httpStatus;
+                        break;
+                    case TokenErrorException e:
+                        code = e.code;
+                        msg = e.message;
+                        httpStatus = e.httpStatus;
+                        break;
+                    case ExternalErrorException e:
+                        code = e.code;
+                        msg = string.IsNullOrEmpty(e.partnerName)
+                            ? e.message : string.Format("[{0}]{1}", e.partnerName, e.message);
+                        httpStatus = e.httpStatus;
+                        break;
+                    case SystemErrorException e:
+                        code = e.code;
+                        msg = e.message;
+                        httpStatus = e.httpStatus;
+
+                        if (e.exception != null)
+                        {
+                            _logger.LogError(e.exception, e.exception.Message);
+                        }
+
                         break;
                     default:
-                        _logger.LogError(ex, "[{0}-{1}]", DateTime.UtcNow.Ticks, Thread.CurrentThread.ManagedThreadId);
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        code = ResponseData.SYSTEM_ERROR.Code;
+                        msg = ResponseData.SYSTEM_ERROR.Message;
+                        httpStatus = ResponseData.SYSTEM_ERROR.HttpStatus;
                         break;
                 }
 
-                var result = JsonSerializer.Serialize(new { message = GetErrorMessage(ex) });
+                var baseResponse = new BaseResponse(new StatusResponse(code, msg));
+                var result = JsonSerializer.Serialize(baseResponse);
+                response.StatusCode = httpStatus;
                 await response.WriteAsync(result);
             }
         }
