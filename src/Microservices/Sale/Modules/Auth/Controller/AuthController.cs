@@ -25,9 +25,8 @@ public class AuthController : BaseApiController
     [HttpGet("token/refresh")]
     public IActionResult refreshToken()
     {
-        string userId = GetUserIdFromContext();
         var token =GetTokenInfoFromContext();
-        var response = _authservice.RefreshToken(userId);
+        var response = _authservice.RefreshToken(token);
         return new OkObjectResult(response);
     }
 }

@@ -35,73 +35,75 @@ public class AuthService : IAuthService
 
     public BaseResponse Login(LoginRequest login)
     {
-        // validate account LDAP
-        // _ldapUtils.CheckUserLoginLdap(login.username, login.password);
+        //validate account LDAP
+        //** _ldapUtils.CheckUserLoginLdap(login.username, login.password);
         
        //check user should has in DB
-       // SysAdminUser sysAdminUser = _sysAdminUserRepository.FindByUserName(login.username);
-       // if (sysAdminUser == null)
-       //     throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
-       //
+       SysUserInfo? sysUserinfo = _sysAdminUserRepository.FindSysUserInfoRawSqlByUserName(login.username);
+       if (sysUserinfo == null)
+            throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
+
+       UserInfo userInfo = new UserInfo()
+       {
+           firstname = sysUserinfo.FirstName,
+           lastname = sysUserinfo.LastName,
+           email = sysUserinfo.Email,
+           user_id = sysUserinfo.UserId,
+           username = sysUserinfo.Username,
+           role_name = new string[] { sysUserinfo.RoleName }
+       };
        
-       // Query Data SPLDB Get info and role to userInfo
- //      SysUserInfo sysUserinfo = _sysAdminUserRepository.findSysUserInfoRawSqlByUserId(login.username);
-       UserInfo userInfo = new UserInfo();
-        userInfo.firstname = "firstname";
-        userInfo.lastname = "firstname";
-        userInfo.email = "spl@gmail.com";
-        userInfo.user_id = "supachai01";
-        userInfo.username = "supachai";
-       // userInfo.role_name = new string[]{""};
-        // build token
-        
-        TokenInfo tokenInfo = new TokenInfo()
-        {
-            user_id = userInfo.user_id,
-            firstname = userInfo.firstname,
-            lastname = userInfo.lastname,
-            email = userInfo.email,
-            username = userInfo.username,
-            role = userInfo.role_name
-        };
-        
+        // build token jwt
+        TokenInfo tokenInfo = BuildTokenInfo(userInfo);
         LoginResponse response = new LoginResponse();
         response.token = _jwtUtils.GenerateJwtToken(tokenInfo);;
         response.refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo);;
         response.user_info = userInfo;
         
-        
         //terminate old session in redis
+        
         return new BaseResponse(new StatusResponse(), response);
     }
 
-    public BaseResponse RefreshToken(string userId)
+    public BaseResponse RefreshToken(TokenInfo token)
     {
-        // Query Data SPLDB Get info and role to userInfo
-        UserInfo userInfo = new UserInfo();
-        userInfo.firstname = "firstname";
-        userInfo.lastname = "firstname";
-        userInfo.email = "spl@gmail.com";
-        userInfo.user_id = "supachai01";
-        userInfo.username = "supachai";
-        userInfo.role_name = new string[]{"admin","user"};
+        //check user should has in DB
+        SysUserInfo? sysUserinfo = _sysAdminUserRepository.FindSysUserInfoRawSqlByUserName(token.username);
+        if (sysUserinfo == null)
+            throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
 
-
-        TokenInfo tokenInfo = new TokenInfo()
+        UserInfo userInfo = new UserInfo()
         {
-            user_id = userInfo.user_id,
-            firstname = userInfo.firstname,
-            lastname = userInfo.lastname,
-            email = userInfo.email,
-            username = userInfo.username,
-            role = userInfo.role_name
+            firstname = sysUserinfo.FirstName,
+            lastname = sysUserinfo.LastName,
+            email = sysUserinfo.Email,
+            user_id = sysUserinfo.UserId,
+            username = sysUserinfo.Username,
+            role_name = new string[] { sysUserinfo.RoleName }
         };
-        
+       
+        // build token jwt
+        TokenInfo tokenInfo = BuildTokenInfo(userInfo);
         RefreshTokenResponse response = new RefreshTokenResponse()
         {
             token = _jwtUtils.GenerateJwtToken(tokenInfo),
             refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo)
         };
+        
+        //terminate old session in redis
         return new BaseResponse(new StatusResponse(), response);
+    }
+
+    private TokenInfo BuildTokenInfo(UserInfo userInfo)
+    {
+       return  new TokenInfo()
+                    {
+                        user_id = userInfo.user_id,
+                        firstname = userInfo.firstname,
+                        lastname = userInfo.lastname,
+                        email = userInfo.email,
+                        username = userInfo.username,
+                        role = userInfo.role_name
+                    };
     }
 }
