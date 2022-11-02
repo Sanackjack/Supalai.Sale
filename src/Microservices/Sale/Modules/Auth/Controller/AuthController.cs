@@ -26,6 +26,7 @@ public class AuthController : BaseApiController
     public IActionResult refreshToken()
     {
         string userId = GetUserIdFromContext();
+        var token =GetTokenInfoFromContext();
         var response = _authservice.RefreshToken(userId);
         return new OkObjectResult(response);
     }

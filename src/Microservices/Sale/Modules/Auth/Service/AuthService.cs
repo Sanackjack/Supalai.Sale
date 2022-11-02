@@ -45,18 +45,29 @@ public class AuthService : IAuthService
        //
        
        // Query Data SPLDB Get info and role to userInfo
-       SysUserInfo sysUserinfo = _sysAdminUserRepository.findSysUserInfoRawSqlByUserId(login.username);
+ //      SysUserInfo sysUserinfo = _sysAdminUserRepository.findSysUserInfoRawSqlByUserId(login.username);
        UserInfo userInfo = new UserInfo();
         userInfo.firstname = "firstname";
         userInfo.lastname = "firstname";
         userInfo.email = "spl@gmail.com";
         userInfo.user_id = "supachai01";
         userInfo.username = "supachai";
-        userInfo.role_name = new string[]{"admin","user"};
+       // userInfo.role_name = new string[]{""};
         // build token
+        
+        TokenInfo tokenInfo = new TokenInfo()
+        {
+            user_id = userInfo.user_id,
+            firstname = userInfo.firstname,
+            lastname = userInfo.lastname,
+            email = userInfo.email,
+            username = userInfo.username,
+            role = userInfo.role_name
+        };
+        
         LoginResponse response = new LoginResponse();
-        response.token = _jwtUtils.GenerateJwtToken(userInfo.user_id);;
-        response.refresh_token = _jwtUtils.GenerateRefreshToken(userInfo.user_id);;
+        response.token = _jwtUtils.GenerateJwtToken(tokenInfo);;
+        response.refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo);;
         response.user_info = userInfo;
         
         
@@ -74,12 +85,22 @@ public class AuthService : IAuthService
         userInfo.user_id = "supachai01";
         userInfo.username = "supachai";
         userInfo.role_name = new string[]{"admin","user"};
-        
+
+
+        TokenInfo tokenInfo = new TokenInfo()
+        {
+            user_id = userInfo.user_id,
+            firstname = userInfo.firstname,
+            lastname = userInfo.lastname,
+            email = userInfo.email,
+            username = userInfo.username,
+            role = userInfo.role_name
+        };
         
         RefreshTokenResponse response = new RefreshTokenResponse()
         {
-            token = _jwtUtils.GenerateJwtToken(userInfo.user_id),
-            refresh_token = _jwtUtils.GenerateRefreshToken(userInfo.user_id)
+            token = _jwtUtils.GenerateJwtToken(tokenInfo),
+            refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo)
         };
         return new BaseResponse(new StatusResponse(), response);
     }

@@ -13,9 +13,9 @@ using Microsoft.Extensions.Configuration;
 namespace ClassifiedAds.Infrastructure.JWT;
 public interface IJwtUtils
 {
-    public string GenerateJwtToken(string userId);
+    public string GenerateJwtToken(TokenInfo tokenInfo);
     public TokenInfo? ValidateJwtToken(string token);
-    public string GenerateRefreshToken(string userId);
+    public string GenerateRefreshToken(TokenInfo tokenInfo);
 }
 
 public class JwtUtils : IJwtUtils
@@ -27,23 +27,31 @@ public class JwtUtils : IJwtUtils
         this._configuration = configuration;
     }
 
-    public string GenerateJwtToken(string userId)
+    public string GenerateJwtToken(TokenInfo tokenInfo)
     {
-        List<Claim> claims = BuildCliams(userId, false);
+        List<Claim> claims = BuildCliams(tokenInfo, false);
         return BuildToken(Convert.ToDouble(_configuration["JwtSettings:Expire"]), claims);
     }
 
-    public string GenerateRefreshToken(string userId)
+    public string GenerateRefreshToken(TokenInfo tokenInfo)
     {
-        List<Claim> claims = BuildCliams(userId, true);
+        List<Claim> claims = BuildCliams(tokenInfo, true);
         return BuildToken(Convert.ToDouble(_configuration["JwtSettings:Expire"]) + 4.00f, claims);
     }
 
-    private List<Claim> BuildCliams(string userId, bool isRefreshToken)
+    private List<Claim> BuildCliams(TokenInfo tokenInfo, bool isRefreshToken)
     {
         List<Claim> claims = new List<Claim>();
-        claims.Add(new Claim(nameof(TokenInfo.user_id), userId));
         claims.Add(new Claim(nameof(TokenInfo.is_refresh_token), isRefreshToken ? "true" : "false"));
+        claims.Add(new Claim(nameof(TokenInfo.user_id), tokenInfo.user_id));
+        claims.Add(new Claim(nameof(TokenInfo.username), tokenInfo.username));
+        claims.Add(new Claim(nameof(TokenInfo.firstname), tokenInfo.firstname));
+        claims.Add(new Claim(nameof(TokenInfo.lastname), tokenInfo.lastname));
+        claims.Add(new Claim(nameof(TokenInfo.email), tokenInfo.email));
+        foreach (var role in tokenInfo.role)
+        {
+            claims.Add(new Claim(nameof(TokenInfo.role), role));
+        }
         return claims;
     }
 
@@ -54,7 +62,7 @@ public class JwtUtils : IJwtUtils
         {
             Subject = new ClaimsIdentity(claim),
             Expires = DateTime.UtcNow.AddHours(expire),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"])), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"])), SecurityAlgorithms.HmacSha256Signature),
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
@@ -62,7 +70,7 @@ public class JwtUtils : IJwtUtils
 
     public TokenInfo? ValidateJwtToken(string token)
     {
-        if (token == null)
+        if (string.IsNullOrEmpty(token))
         {
             return null;
         }
@@ -78,19 +86,25 @@ public class JwtUtils : IJwtUtils
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
                 ValidateAudience = false,
+
                 // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
 
             tokenInfo.user_id = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.user_id)).Value;
+            tokenInfo.firstname = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.firstname)).Value;
+            tokenInfo.lastname = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.lastname)).Value;
+            tokenInfo.username = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.username)).Value;
+            tokenInfo.email = (string)jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.email)).Value;
+            tokenInfo.payload = token.Split(".")[1];
+            tokenInfo.role = jwtToken.Claims.Where(x => x.Type == nameof(TokenInfo.role)).Select(y => y.Value).ToList();
             tokenInfo.is_refresh_token = bool.Parse(jwtToken.Claims.First(x => x.Type == nameof(TokenInfo.is_refresh_token)).Value.ToString());
             return tokenInfo;
         }
         catch (SecurityTokenExpiredException e)
         {
-
             throw new AuthenicationErrorException(ResponseData.TOKEN_EXPIRED);
         }
         catch (Exception e)
