@@ -12,9 +12,11 @@ using ClassifiedAds.Infrastructure.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using ClassifiedAds.Infrastructure.Logging;
+using ClassifiedAds.Infrastructure.ValidateModelAttribute;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Spl.Crm.SaleOrder
@@ -62,6 +64,15 @@ namespace Spl.Crm.SaleOrder
                     opts.SupportedUICultures = supportedCultures;
                 });
 
+            services.AddControllers().ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var result = new ValidationFailedResult(context.ModelState);
+                    result.ContentTypes.Add(MediaTypeNames.Application.Json); 
+                    return result;
+                };
+            });
             services.AddControllers(configure =>
             {
                 configure.Filters.Add(typeof(GlobalExceptionFilter));

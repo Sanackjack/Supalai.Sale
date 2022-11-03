@@ -10,6 +10,7 @@ using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using ClassifiedAds.Application;
+using ClassifiedAds.Infrastructure.ValidateModelAttribute;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Controller;
 [ApiController]
@@ -29,6 +30,7 @@ public class AuthController : BaseApiController
         this._authservice = authService;
     }
     [AllowAnonymous]
+    [ValidateModel]
     [HttpPost("authentication")]
     public IActionResult Login([FromBody][Required]LoginRequest account)
     {
