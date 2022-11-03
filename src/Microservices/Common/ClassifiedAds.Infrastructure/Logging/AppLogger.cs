@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
+using ClassifiedAds.Infrastructure.JWT;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Twilio.TwiML.Messaging;
@@ -30,7 +31,7 @@ namespace ClassifiedAds.Infrastructure.Logging
         {
             var remoteHost = _context.HttpContext.Connection.RemoteIpAddress.ToString();
             string currTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mmzzz");
-            string username = _context.HttpContext.Items["UserName"] != null ? _context.HttpContext.Items["UserName"].ToString() : "Anonymous";
+            string username = _context.HttpContext.Items["TokenInfo"] != null ? ((TokenInfo)_context.HttpContext.Items["TokenInfo"]).username : "Anonymous";
             string correlationId = _context.HttpContext.TraceIdentifier;
             string buildMsg = string.Join("|", new string[] { currTime, level.ToString() , "spl-om-backend", correlationId, remoteHost, username, className, "message: " + message });
 
