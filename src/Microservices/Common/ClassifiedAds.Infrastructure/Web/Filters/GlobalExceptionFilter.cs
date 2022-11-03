@@ -3,19 +3,13 @@ using ClassifiedAds.CrossCuttingConcerns.Constants;
 using ClassifiedAds.CrossCuttingConcerns.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Threading;
+
 using ClassifiedAds.Infrastructure.Logging;
 
 namespace ClassifiedAds.Infrastructure.Web.Filters
 {
     public class GlobalExceptionFilter : IExceptionFilter
     {
-        //private readonly ILogger<GlobalExceptionFilter> _logger;
         private readonly IAppLogger _logger;
         public GlobalExceptionFilter(IAppLogger logger)
         {
