@@ -6,6 +6,7 @@ using ClassifiedAds.Infrastructure.JWT;
 using ClassifiedAds.Infrastructure.LDAP;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 using ClassifiedAds.Domain.Uow;
+using ClassifiedAds.Infrastructure.Logging;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Service;
@@ -14,13 +15,14 @@ public class AuthService : IAuthService
 {
     private IJwtUtils _jwtUtils;
     private ILDAPUtils _ldapUtils;
+    private readonly IAppLogger _logger;
     private readonly IConfiguration _configuration;
     private readonly ISysAdminUserRepository _sysAdminUserRepository;
     private readonly ISysAdminRoleRepository _sysAdminRoleRepository;
     private readonly ISaleOrderRepository _saleOrderRepository;
     private readonly IUnitOfWork _uow;
     
-    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository, ISaleOrderRepository saleOrderRepository)
+    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository, ISaleOrderRepository saleOrderRepository, IAppLogger logger)
     {
         _configuration = configuration;
         _jwtUtils = jwtUtils;
@@ -28,28 +30,30 @@ public class AuthService : IAuthService
         _sysAdminUserRepository = sysAdminUserRepository;
         _sysAdminRoleRepository = sysAdminRoleRepository;
         _saleOrderRepository = saleOrderRepository;
+        _logger = logger;
         _uow = uow;
     }
 
     public BaseResponse Login(LoginRequest login)
     {
-        //validate account LDAP
+        _logger.Info("Authentication LDAP"); 
         _ldapUtils.CheckUserLoginLdap(login.username, login.password);
-        
-       //check user should has in DB
+       
+       _logger.Info("Authentication DataBase");
        SysUserInfo? sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(login.username);
        if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
        
        UserInfo userInfo = BuildUserInfo(sysUserinfo);
        
-        // build token jwt
+       _logger.Info("Build JWT Token");
         TokenInfo tokenInfo = BuildTokenInfo(userInfo);
         LoginResponse response = new LoginResponse();
         response.token = _jwtUtils.GenerateJwtToken(tokenInfo);;
         response.refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo);;
         response.user_info = userInfo;
         
+        _logger.Info("Create new Session In Redis");
         //terminate old session in redis
         
         return new BaseResponse(new StatusResponse(), response);
@@ -57,13 +61,13 @@ public class AuthService : IAuthService
 
     public BaseResponse RefreshToken(TokenInfo token)
     {
-        //check user should has in DB
+        _logger.Info("Authentication DataBase");
         SysUserInfo? sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(token.username);
         if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
         UserInfo userInfo = BuildUserInfo(sysUserinfo);
         
-        // build token jwt
+        _logger.Info("Build JWT Token");
         TokenInfo tokenInfo = BuildTokenInfo(userInfo);
         RefreshTokenResponse response = new RefreshTokenResponse()
         {
@@ -71,7 +75,7 @@ public class AuthService : IAuthService
             refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo)
         };
         
-        //terminate old session in redis
+        _logger.Info(string.Format("Create new Session In Redis of username {0}",token.username));
         return new BaseResponse(new StatusResponse(), response);
     }
 

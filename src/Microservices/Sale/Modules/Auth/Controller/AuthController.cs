@@ -33,17 +33,18 @@ public class AuthController : BaseApiController
     [ValidateModel]
     [HttpPost("authentication")]
     public IActionResult Login([FromBody][Required]LoginRequest account)
-    {
-        var result = _authservice.Login(account);
-        return new OkObjectResult(result);
+    { 
+        return new OkObjectResult(_authservice.Login(account));
     }
 
     [HttpGet("token/refresh")]
     public IActionResult refreshToken()
     {
         var token = GetTokenInfoFromContext();
-        var response = _authservice.RefreshToken(token);
-        return new OkObjectResult(response);
+        
+        _logger.Info(string.Format("Username is {0} Call Refresh Token",token.username));
+        
+        return new OkObjectResult(_authservice.RefreshToken(token));
     }
 
     [HttpGet]
