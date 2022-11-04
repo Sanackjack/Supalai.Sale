@@ -22,11 +22,10 @@ public class AuthController : BaseApiController
     private readonly IStringLocalizer<LocalizeResource> localizer;
     public AuthController(IAppLogger _logger,
                             IStringLocalizer<LocalizeResource> localizeResource
-                                ,IAuthService authService, IAuthService authservice)
+                                ,IAuthService authService)
     {
         this._logger = _logger ;
         this.localizer = localizeResource;
-        _authservice = authservice;
         this._authservice = authService;
     }
     [AllowAnonymous]
