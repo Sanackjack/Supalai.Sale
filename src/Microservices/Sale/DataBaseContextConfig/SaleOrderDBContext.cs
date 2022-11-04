@@ -21,10 +21,30 @@ public class SaleOrderDBContext : DbContext
     //customModel
     
     public DbSet<SysUserInfo> SysUserInfo { get; set; }
+   // public DbSet<Roles> RoleName { get; set; }
+    
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<SysUserInfo>().HasNoKey();
+        modelBuilder.Entity<SysUserInfo>()
+            // .Property(m => m.RoleName).HasColumnType("RoleName")
+            // ;
+            .HasNoKey();
+          //  .HasMany<Roles>(x => x.RoleName);
+            //.HasAlternateKey(x => x.RoleName);
+            
+            // .HasNoKey()
+            // .HasMany(c => c.RoleName);
+            //.WithOne(s => s.RoleName);
+        
+        // modelBuilder.Entity<SysUserInfo>(
+        //     eb =>
+        //     {
+        //         eb.HasNoKey();
+        //      //   eb
+        //     }
+        // );
+        //modelBuilder.Entity<Roles>().HasNoKey();
         
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

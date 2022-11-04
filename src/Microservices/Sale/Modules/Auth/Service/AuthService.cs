@@ -37,10 +37,10 @@ public class AuthService : IAuthService
     public BaseResponse Login(LoginRequest login)
     {
         _logger.Info("Authentication LDAP"); 
-        _ldapUtils.CheckUserLoginLdap(login.username, login.password);
+       // _ldapUtils.CheckUserLoginLdap(login.username, login.password);
        
        _logger.Info("Authentication DataBase");
-       SysUserInfo? sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(login.username);
+       var sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(login.username);
        if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
        
@@ -62,7 +62,7 @@ public class AuthService : IAuthService
     public BaseResponse RefreshToken(TokenInfo token)
     {
         _logger.Info("Authentication DataBase");
-        SysUserInfo? sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(token.username);
+        var sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(token.username);
         if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
         UserInfo userInfo = BuildUserInfo(sysUserinfo);
@@ -92,16 +92,16 @@ public class AuthService : IAuthService
                     };
     }
     
-    private UserInfo BuildUserInfo(SysUserInfo sysUserinfo)
+    private UserInfo BuildUserInfo(List<SysUserInfo> sysUserinfo)
     {
         return   new UserInfo()
         {
-            firstname = sysUserinfo.FirstName,
-            lastname = sysUserinfo.LastName,
-            email = sysUserinfo.Email,
-            user_id = sysUserinfo.UserId,
-            username = sysUserinfo.Username,
-            role_name = new string[] { sysUserinfo.RoleName }
+            firstname = sysUserinfo[0].FirstName,
+            lastname = sysUserinfo[0].LastName,
+            email = sysUserinfo[0].Email,
+            user_id = sysUserinfo[0].UserId,
+            username = sysUserinfo[0].Username,
+            role_name = sysUserinfo.Select(s => { return s.RoleName;}).ToList()
         };
     }
 }
