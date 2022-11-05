@@ -25,7 +25,6 @@ public class ProjectController : BaseApiController
         this._projectService = projectService;
     }
 
-    [AllowAnonymous]
     [HttpGet("projects")]
     public BaseResponse ProjectList( [FromQuery] ProjectListRequest requestModel)
     {

@@ -14,7 +14,7 @@ public class ProjectRepository : BaseRepository<SysMasterProjects>, IProjectRepo
 
     }
 
-    public List<SysMasterProjects> FindProjectListRawSql(string projectID)
+    public List<SysMasterProjects> FindProjectListRawSql(string keySearch)
     {
 
         string stm = string.Format(@"select DISTINCT SMP.ProjectId, SMP.ProjectName, SMP.ProjectType
@@ -24,7 +24,7 @@ public class ProjectRepository : BaseRepository<SysMasterProjects>, IProjectRepo
                                      left join Sys_Master_ProjectLicenses SMPL on SMPL.ProjectID = SMP.ProjectID
                                      left join Sys_Admin_Bu SAB on SAB.BUCode = SMP.BUID
                                      where SMP.isDelete = 0 {0}",
-                                     projectID is not null ? string.Format($"and SMP.ProjectID = '{projectID}'") : "");
+                                     keySearch is not null ? string.Format($"and SMP.ProjectID = '{keySearch}'") : "");
         return db.SysMasterProjects.FromSqlRaw(stm).ToList();
     }
 }

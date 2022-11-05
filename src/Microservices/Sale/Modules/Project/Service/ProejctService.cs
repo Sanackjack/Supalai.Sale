@@ -34,13 +34,13 @@ public class ProjectService : IProjectService
         this._context = context;
     }
 
-    public BaseResponse ProjectList(ProjectListRequest request)
+    public BaseResponse ProjectList(ProjectListRequest projectListRequest)
     {
 
-        if (request.key_search is not null && request.key_search.Length <= 3) throw new ValidationErrorException(ResponseData.VALIDATION_REQUEST_PARAMETER_FAIL);
+        if (projectListRequest.key_search is not null && projectListRequest.key_search.Length <= 3) throw new ValidationErrorException(ResponseData.VALIDATION_REQUEST_PARAMETER_FAIL);
 
         List<ProjectListResponse> projects = new List<ProjectListResponse>();
-        foreach (var item in _projectRepository.FindProjectListRawSql(request.key_search))
+        foreach (var item in _projectRepository.FindProjectListRawSql(projectListRequest.key_search))
         {
             projects.Add( new ProjectListResponse()
             {

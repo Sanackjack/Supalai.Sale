@@ -5,5 +5,5 @@ namespace Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 
 public interface IProjectRepository
 {
-    public List<SysMasterProjects> FindProjectListRawSql(string keySearch);
+    public List<SysMasterProjects> FindProjectListRawSql(string? keySearch);
 }
