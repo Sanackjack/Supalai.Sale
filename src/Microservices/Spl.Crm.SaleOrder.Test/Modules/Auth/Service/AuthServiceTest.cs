@@ -81,4 +81,123 @@ public class AuthServiceTest
         Assert.Equal("refresh_token1234567890", data?.refresh_token);
         Assert.NotNull(data?.user_info);
     }
+    
+    [Fact]
+    public void Test_Case_Login_UserNotFound_InLDAP_Fail()
+    {
+        //arrange
+        _ldapUtilsMock.Setup(p => p.CheckUserLoginLdap(It.IsAny<string>(), It.IsAny<string>())).Throws(new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD));
+       
+        //act
+        try
+        {
+            var result = _service.Login(new LoginRequest()
+            {
+                username = "invalid",
+                password = "password"
+            });
+        }
+        catch (Exception e)
+        {
+         //assert
+         Assert.IsType<AuthenicationErrorException>(e);
+         var error = e as AuthenicationErrorException;
+         Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.Message, error?.message);
+         Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.Code, error?.code);
+         Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.HttpStatus, error?.httpStatus);
+        }
+        //Verify
+        _saleOrderRepositoryMock.Verify(m => m.FindSysUserInfoRawSqlByUserName("invalid"),Times.Never);
+        _jwtUtilsMock.Verify(p => p.GenerateJwtToken(It.IsAny<TokenInfo>()),Times.Never);
+        _jwtUtilsMock.Verify(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>()),Times.Never);
+    }
+    
+    [Fact]
+    public void Test_Case_Login_UserNotFound_InDB_Fail()
+    {
+        //arrange
+        _ldapUtilsMock.Setup(p => p.CheckUserLoginLdap(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+        _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>()))
+            .Returns(null as List<SysUserInfo>);
+ 
+        //act
+        try
+        {
+            var result = _service.Login(new LoginRequest()
+            {
+                username = "invalid",
+                password = "password"
+            });
+        }
+        catch (Exception e)
+        {
+            //assert
+            Assert.IsType<AuthenicationErrorException>(e);
+            var error = e as AuthenicationErrorException;
+            Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.Message, error?.message);
+            Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.Code, error?.code);
+            Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.HttpStatus, error?.httpStatus);
+        }
+        
+        //Verify
+        _jwtUtilsMock.Verify(p => p.GenerateJwtToken(It.IsAny<TokenInfo>()),Times.Never);
+        _jwtUtilsMock.Verify(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>()),Times.Never);
+
+    }
+    
+    [Fact]
+    public void Test_Case_RefreshToken_AllValid_Success()
+    {
+        //arrange
+        SysUserInfo sysUserInfo = new SysUserInfo()
+        {
+            UserId = "supachaisri",
+            FirstName = "supachai",
+            LastName = "supachaisri",
+            Email = "spl@gmail.com",
+            RoleName = "admin"
+        };
+        List<SysUserInfo> listSysUserInfo = new List<SysUserInfo>();
+        listSysUserInfo.Add(sysUserInfo);
+        _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>())).Returns(listSysUserInfo);
+
+        _jwtUtilsMock.Setup(p => p.GenerateJwtToken(It.IsAny<TokenInfo>())).Returns("token1234567890");
+        _jwtUtilsMock.Setup(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>())).Returns("refresh_token1234567890");
+        
+        //act
+        var result = _service.RefreshToken(new TokenInfo());
+
+        //assert
+        Assert.NotNull(result);
+        Assert.IsType<BaseResponse>(result);
+
+        var data = result?.data as RefreshTokenResponse;
+        Assert.NotNull(data);
+        Assert.Equal("token1234567890", data?.token);
+        Assert.Equal("refresh_token1234567890", data?.refresh_token);
+    }
+    
+    [Fact]
+    public void Test_Case_RefreshToken_UserNotFound_InDB_Fail()
+    {
+        //arrange
+        _ldapUtilsMock.Setup(p => p.CheckUserLoginLdap(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+        _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>()))
+            .Returns(null as List<SysUserInfo>);
+ 
+        //act
+        try
+        {
+            _service.RefreshToken(new TokenInfo());
+        }
+        catch (Exception e)
+        {
+            //assert
+            Assert.IsType<AuthenicationErrorException>(e);
+            var error = e as AuthenicationErrorException;
+            Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.Message, error?.message);
+            Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.Code, error?.code);
+            Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.HttpStatus, error?.httpStatus);
+        }
+    }
 }

@@ -1,6 +1,8 @@
 using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
+using ClassifiedAds.Infrastructure.JWT;
 using ClassifiedAds.Infrastructure.Localization;
 using ClassifiedAds.Infrastructure.Logging;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Moq;
@@ -67,5 +69,42 @@ public class AuthControllerTest
         Assert.Equal("token1234567890", data?.token);
         Assert.Equal("refresh_token1234567890", data?.refresh_token);
         Assert.NotNull(data?.user_info);
+    }
+    
+    [Fact]
+    public void Test_Case_RefreshToken_Success()
+    {
+        //arrange
+        
+        var httpContext = new DefaultHttpContext();
+        httpContext.Items["TokenInfo"] = new TokenInfo()
+        {
+            username = "supachai"
+        };
+        _controller.ControllerContext.HttpContext = httpContext;
+        RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse()
+        {
+            token = "token1234567890",
+            refresh_token = "refreshToken1234567890"
+        };
+        var  response = new BaseResponse(new StatusResponse("0", "success"), refreshTokenResponse);
+        _iAuthServiceMock.Setup(p => p.RefreshToken(It.IsAny<TokenInfo>())).Returns(response);
+        
+        //act
+        var result = _controller.refreshToken();
+
+        //assert
+        Assert.NotNull(result);
+        var okObjectResult = result as OkObjectResult;
+        Assert.IsType<BaseResponse>(okObjectResult?.Value);
+        
+        var responseModel = okObjectResult?.Value as BaseResponse;
+        Assert.Equal(200, okObjectResult?.StatusCode);
+        Assert.NotNull(responseModel);
+       
+        var data = responseModel?.data as RefreshTokenResponse;
+        Assert.NotNull(data);
+        Assert.Equal("token1234567890", data?.token);
+        Assert.Equal("refreshToken1234567890", data?.refresh_token);
     }
 }
