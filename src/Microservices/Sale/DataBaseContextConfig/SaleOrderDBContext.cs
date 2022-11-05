@@ -21,7 +21,8 @@ public class SaleOrderDBContext : DbContext
     //customModel
     
     public DbSet<SysUserInfo> SysUserInfo { get; set; }
-    
+    public DbSet<SysMasterProjects> SysMasterProjects { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<SysUserInfo>().HasNoKey();

@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using ClassifiedAds.Infrastructure.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Spl.Crm.SaleOrder.Modules.Project.Service;
 
 namespace Spl.Crm.SaleOrder
 {
@@ -86,6 +87,7 @@ namespace Spl.Crm.SaleOrder
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<ILDAPUtils, LDAPUtils>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProjectService, ProjectService>();
 
             services.AddSwaggerGen();
             services.AddSaleOrderModule(AppSettings);
