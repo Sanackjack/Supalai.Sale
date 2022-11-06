@@ -8,7 +8,9 @@ public interface IProjectRepository
 {
     public List<SysMasterProjects> FindProjectListRawSql(string? keySearch);
 
-    public List<ProjectUnits> FindProjectUnitListRawSql(ProjectUnitsRequest projectUnitsRequest);
+    public List<ProjectUnits> FindProjectUnitListByIdRawSql(ProjectUnitsRequest projectUnitsRequest);
+
+    public List<ProjectSummary> FindProjectSummaryByIdRawSql(int projectId);
 
 
 }

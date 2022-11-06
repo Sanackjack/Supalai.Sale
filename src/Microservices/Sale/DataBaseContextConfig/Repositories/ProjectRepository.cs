@@ -30,7 +30,20 @@ public class ProjectRepository : BaseRepository<SysMasterProjects>, IProjectRepo
         return db.SysMasterProjects.FromSqlRaw(stm).ToList();
     }
 
-    public List<ProjectUnits> FindProjectUnitListRawSql(ProjectUnitsRequest projectUnitsRequest)
+    public List<ProjectSummary> FindProjectSummaryByIdRawSql(int projectId)
+    {
+        string stm = string.Format(@"select SMP.ProjectID , SMU.UnitStatus , count(*) as total_unit
+                                     from Sys_Master_Projects SMP
+                                     left join Sys_Master_Units SMU on SMP.ProjectID = SMU.ProjectID
+                                     where SMP.isDelete = 0
+                                     and SMU.isDelete = 0
+                                     and SMP.ProjectID = '{0}'
+                                     group by SMP.ProjectID , SMU.UnitStatus",
+                                     projectId);
+        return db.ProjectSummary.FromSqlRaw(stm).ToList();
+    }
+
+    public List<ProjectUnits> FindProjectUnitListByIdRawSql(ProjectUnitsRequest projectUnitsRequest)
     {
         string stm = string.Format(@"SELECT
                                     MP.ProjectName,

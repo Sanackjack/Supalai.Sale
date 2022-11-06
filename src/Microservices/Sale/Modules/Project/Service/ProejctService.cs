@@ -39,25 +39,21 @@ public class ProjectService : IProjectService
 
         if (projectListRequest.key_search is not null && projectListRequest.key_search.Length <= 3) throw new ValidationErrorException(ResponseData.VALIDATION_REQUEST_PARAMETER_FAIL);
 
-        List<ProjectListResponse> projects = new List<ProjectListResponse>();
-        foreach (var item in _projectRepository.FindProjectListRawSql(projectListRequest.key_search))
-        {
-            projects.Add( new ProjectListResponse()
-            {
-                project_id = item.ProjectID,
-                project_name = item.ProjectName,
-                project_type = item.ProjectType
-            });
-        }
-        return new BaseResponse(new StatusResponse(), new { projects = projects } );
-    }
+        var respnoseModel = _projectRepository.FindProjectListRawSql(projectListRequest.key_search).Select(m => new ProjectListResponse()
+                            {
+                                project_id = m.ProjectID,
+                                project_name = m.ProjectName,
+                                project_type = m.ProjectType
+                            }).ToList();
 
+        return new BaseResponse(new StatusResponse(), new { projects = respnoseModel } );
+    }
 
     public BaseResponse ProjectUnitsList(ProjectUnitsRequest projectUnitsListRequest)
     {
         if (projectUnitsListRequest.searchkey is not null && projectUnitsListRequest.searchkey.Length <= 3) throw new ValidationErrorException(ResponseData.VALIDATION_REQUEST_PARAMETER_FAIL);
 
-        var respnoseModel = _projectRepository.FindProjectUnitListRawSql(projectUnitsListRequest).Select(m => new ProjectUnitsResponse()
+        var respnoseModel = _projectRepository.FindProjectUnitListByIdRawSql(projectUnitsListRequest).Select(m => new ProjectUnitsResponse()
                             {
                                 criteria = m.Critiria,
                                 unit_id = m.UnitID,
@@ -113,13 +109,27 @@ public class ProjectService : IProjectService
                                     location_price = (double?) m.PL_LocationPrice,
                                     inc_area_price = (double?) m.PL_IncAreaPrice,
                                     is_hotdeal = m.PL_IsHotdeal,
-                                    discount_amount = (double?)m.PL_DiscountAmount,
-                                    decorate_discount = (double?)m.PL_DecoracteDiscount,
-                                    decorate_amount = (double?)m.PL_DecoracteAmount
+                                    discount_amount = (double?) m.PL_DiscountAmount,
+                                    decorate_discount = (double?) m.PL_DecoracteDiscount,
+                                    decorate_amount = (double?) m.PL_DecoracteAmount
                                 }
 
                             }).ToList();
 
         return new BaseResponse(new StatusResponse(), respnoseModel);
     }
+
+    public BaseResponse ProjectSummary(ProjectSummaryRequest projectSummaryRequest)
+    {
+        var respnoseModel = _projectRepository.FindProjectSummaryByIdRawSql(projectSummaryRequest.projectId).Select(m => new ProjectSummaryResponse()
+        {
+            unit_status = Int32.Parse( m.UnitStatus ),
+            summary_unit = m.total_unit
+        }).ToList();
+
+        return new BaseResponse(new StatusResponse(), new { unit_status_summary = respnoseModel });
+    }
+
+
+
 }

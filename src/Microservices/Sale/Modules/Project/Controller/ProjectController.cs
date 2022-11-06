@@ -38,4 +38,11 @@ public class ProjectController : BaseApiController
     {
         return _projectService.ProjectUnitsList(requestModel);
     }
+
+    [HttpGet("projects/{projectId}/summary")]
+    public BaseResponse ProjectSummary([FromRoute][FromQuery] ProjectSummaryRequest requestModel)
+    {
+        return _projectService.ProjectSummary(requestModel);
+    }
+
 }

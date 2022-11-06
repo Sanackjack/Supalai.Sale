@@ -9,5 +9,7 @@ public interface IProjectService
 
     public BaseResponse ProjectList(ProjectListRequest projectListRequest);
     public BaseResponse ProjectUnitsList(ProjectUnitsRequest projectUnitsListRequest);
+    public BaseResponse ProjectSummary(ProjectSummaryRequest projectSummaryRequest);
+
 
 }
