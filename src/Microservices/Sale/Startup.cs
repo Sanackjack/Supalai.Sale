@@ -64,9 +64,13 @@ namespace Spl.Crm.SaleOrder
                 });
 
             services.AddControllers(configure =>
-            {
-                configure.Filters.Add(typeof(GlobalExceptionFilter));
-            });
+                    {
+                        configure.Filters.Add(typeof(GlobalExceptionFilter));
+                    })
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                    });
 
             services.AddCors(options =>
             {
