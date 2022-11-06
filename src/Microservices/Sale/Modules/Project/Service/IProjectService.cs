@@ -7,6 +7,7 @@ namespace Spl.Crm.SaleOrder.Modules.Project.Service;
 public interface IProjectService
 {
 
-    BaseResponse ProjectList(ProjectListRequest projectListRequest);
+    public BaseResponse ProjectList(ProjectListRequest projectListRequest);
+    public BaseResponse ProjectUnitsList(ProjectUnitsRequest projectUnitsListRequest);
 
 }

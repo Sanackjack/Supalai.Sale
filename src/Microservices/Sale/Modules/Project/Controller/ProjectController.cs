@@ -9,6 +9,8 @@ using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
 using ClassifiedAds.Domain.Entities;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
 using Spl.Crm.SaleOrder.Modules.Project.Model;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace Spl.Crm.SaleOrder.Modules.Project.Controller;
 
@@ -29,5 +31,11 @@ public class ProjectController : BaseApiController
     public BaseResponse ProjectList( [FromQuery] ProjectListRequest requestModel)
     {
         return _projectService.ProjectList(requestModel);
+    }
+
+    [HttpGet("projects/{projectId}/units")]
+    public BaseResponse ProjectList([FromRoute][FromQuery] ProjectUnitsRequest requestModel)
+    {
+        return _projectService.ProjectUnitsList(requestModel);
     }
 }
