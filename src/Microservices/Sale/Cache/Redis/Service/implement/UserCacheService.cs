@@ -29,7 +29,6 @@ namespace Spl.Crm.SaleOrder.Cache.Redis.Service.implement
 
         public override void Set<T>(string key, T value)
         {
-            Debug.WriteLine("from UserCacheService.");
             string buildKey = string.Join('.', prefix, key);
             var timeOut = new DistributedCacheEntryOptions
             {
@@ -40,6 +39,17 @@ namespace Spl.Crm.SaleOrder.Cache.Redis.Service.implement
 
         }
 
+        public override void Delete(string key)
+        {
+            string buildKey = string.Join('.', prefix, key);
+            _cache.Remove(buildKey);
+        }
+
+        public override void Refresh(string key)
+        {
+            string buildKey = string.Join('.', prefix, key);
+            _cache.Refresh(buildKey);
+        }
 
     }
 }

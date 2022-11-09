@@ -24,22 +24,12 @@ namespace Spl.Crm.SaleOrder.Cache.Redis.Service.implement
             redisConfig = configuration.GetSection("Caching:Distributed:Redis:Config").Get<RedisConfigModel>();
         }
 
+        public abstract void Delete(string key);
         public abstract T Get<T>(string key);
-
+        public abstract void Refresh(string key);
         public abstract void Set<T>(string key, T value);
-
-        public void Delete(string key)
-        {
-            Debug.WriteLine("Delete from RedisCacheService.");
-            _cache.Remove(key);
-        }
-        public void Refresh(string key)
-        {
-            Debug.WriteLine("Refresh from RedisCacheService.");
-            _cache.Refresh(key);
-        }
-
     }
+
 
     public static class RedisCacheExtensions
     {

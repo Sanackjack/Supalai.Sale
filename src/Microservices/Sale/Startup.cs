@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Spl.Crm.SaleOrder.Cache.Redis.Service.implement;
 using Spl.Crm.SaleOrder.Cache.Redis.Service;
 using System.Reflection;
+using StackExchange.Redis.ConnectionPool.DependencyInject;
 
 namespace Spl.Crm.SaleOrder
 {
@@ -62,12 +63,10 @@ namespace Spl.Crm.SaleOrder
 
             services.AddScoped<IAuthService, AuthService>();
 
-            //services.AddScoped<IRedisCacheService, RedisCacheService>();
             services.AddScoped<IMasterConfigCacheService, MasterConfigCacheService>();
             services.AddScoped<IUserCacheService, UserCacheService>();
-            //services.AddScoped<UserCacheService>();
-
             services.AddCaches(AppSettings.Caching);
+            services.AddRedisConnectionPool(AppSettings.Caching.Distributed.Redis.Configuration, Int32.Parse( AppSettings.Caching.Distributed.Redis.PoolSize ));
 
             services.AddSwaggerGen();
 

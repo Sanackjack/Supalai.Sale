@@ -27,9 +27,6 @@ namespace Spl.Crm.SaleOrder.Cache.Redis.Service.implement
 
         public override void Set<T>(string key, T value)
         {
-            Debug.WriteLine("from MasterConfigCacheServicse.");
-            Debug.WriteLine(short.Parse(redisConfig.MasterConfigAbsoluteExpiration));
-
             string[] configTimeExpi = redisConfig.MasterConfigAbsoluteExpiration.Split(':');
             DateTime date = DateTime.Now.AddDays(1);
             TimeSpan newTime = new TimeSpan(short.Parse(configTimeExpi[0]), short.Parse(configTimeExpi[1]), short.Parse(configTimeExpi[2]));
@@ -47,15 +44,27 @@ namespace Spl.Crm.SaleOrder.Cache.Redis.Service.implement
             _cache.SetString(buildKey, JsonSerializer.Serialize(value), timeOut);
         }
 
+        public override void Delete(string key)
+        {
+            string buildKey = string.Join('.', prefix, key);
+            _cache.Remove(buildKey);
+        }
+
+        public override void Refresh(string key)
+        {
+            string buildKey = string.Join('.', prefix, key);
+            _cache.Refresh(buildKey);
+        }
+
 
         public T? GetMasterConfig<T>(string table, string key)
         {
-            return this.Get<T>(string.Join('.', prefix , table, key));
+            return this.Get<T>(string.Join('.' , table, key));
         }
 
         public void DeleteMasterConfig(string table, string key)
         {
-            this.Delete(string.Join('.',prefix, table, key));
+            this.Delete(string.Join('.', table, key));
         }
     }
 

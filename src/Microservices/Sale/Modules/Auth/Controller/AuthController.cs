@@ -33,74 +33,17 @@ public class AuthController : ControllerBase
         return new OkObjectResult(result);
     }
 
-    [HttpGet("get")]
-    public IActionResult getRedisData()
-    {
 
-        try
-        {
-             
-            var val = userCacheService.Get<string>("UserCacheService");
-            Debug.WriteLine(val);
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine(e.Message);
-        }
-
-
-        return new OkObjectResult("okay");
-    }
-
-    [HttpGet("add")]
+    [HttpGet("redis")]
     public IActionResult addRedisData()
     {
 
-        try
-        {
-
-            //redisCacheService.Set("RedisCacheService", "xxxx");
-            //masterConfigCache.Set("MasterConfigCache", "xxxx");
-            //userCacheService.Set("UserCacheService", "xxxxx");
-
-            userCacheService.Set("xxxx.UserCacheService", "value");
-        }
-        catch(Exception e)
-        {
-            Debug.WriteLine(e.Message);
-        }
-
-
-        return new OkObjectResult("okay");
-    }
-    [HttpGet("delete")]
-    public IActionResult deleteRedisData()
-    {
-
-        try
-        {
-            masterConfigCache.DeleteMasterConfig("xxxx", "UserCacheService");
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine(e.Message);
-        }
+         var val = userCacheService.Get<string>("UserCacheService");
+         //userCacheService.Set("UserCacheService", "value");
+         //userCacheService.Refresh("UserCacheService");
 
 
         return new OkObjectResult("okay");
     }
 
-    [HttpGet("refresh")]
-    public IActionResult refreshRedisData()
-    {
-        try
-        {
-            //masterConfigCache.Refresh("UserCacheService");
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine(e.Message);
-        }
-        return new OkObjectResult("okay");
-    }
 }
