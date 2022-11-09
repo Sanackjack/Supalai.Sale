@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Reflection;
 
 namespace ClassifiedAds.Application
 {
-    internal static class Utils
+    public static class Utils
     {
         public static bool IsHandlerInterface(Type type)
         {
@@ -15,6 +16,11 @@ namespace ClassifiedAds.Application
 
             return typeDefinition == typeof(ICommandHandler<>)
                 || typeDefinition == typeof(IQueryHandler<,>);
+        }
+
+        public static string getCurrentClassMethod(Type type)
+        {
+            return type.Name.Replace("Controller", "");
         }
     }
 }

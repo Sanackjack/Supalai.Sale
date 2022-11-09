@@ -1,11 +1,21 @@
 ﻿using ClassifiedAds.Infrastructure.DistributedTracing;
 using ClassifiedAds.Infrastructure.Web.Filters;
+using ClassifiedAds.Infrastructure.Middleware;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ClassifiedAds.Infrastructure.JWT;
+using ClassifiedAds.Infrastructure.LDAP;
+using ClassifiedAds.Infrastructure.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Http;
+using ClassifiedAds.Infrastructure.Logging;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Spl.Crm.SaleOrder.Cache.Redis.Service.implement;
 using Spl.Crm.SaleOrder.Cache.Redis.Service;
 using System.Reflection;
@@ -32,14 +42,30 @@ namespace Spl.Crm.SaleOrder
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-           // AppSettings.ConnectionStrings.MigrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            // AppSettings.ConnectionStrings.MigrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
            services.AddApiVersioning(config =>
            {
                config.DefaultApiVersion = new ApiVersion(1, 0);
                config.AssumeDefaultVersionWhenUnspecified = true;
                config.ReportApiVersions = true;
            });
-           
+
+            services.AddLocalization();
+            services.Configure<RequestLocalizationOptions>(
+                opts =>
+                {
+                    var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("en"),
+                        new CultureInfo("ar"),
+                        new CultureInfo("th")
+                    };
+
+                    opts.DefaultRequestCulture = new RequestCulture("en");
+                    opts.SupportedCultures = supportedCultures;
+                    opts.SupportedUICultures = supportedCultures;
+                });
+
             services.AddControllers(configure =>
             {
                 configure.Filters.Add(typeof(GlobalExceptionFilter));
@@ -52,7 +78,8 @@ namespace Spl.Crm.SaleOrder
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             });
-
+            // configure strongly typed settings object
+           /// services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
             services.AddDistributedTracing(AppSettings.DistributedTracing);
 
             services.AddDateTimeProvider();
@@ -60,28 +87,24 @@ namespace Spl.Crm.SaleOrder
 
             services.AddHtmlGenerator();
             services.AddDinkToPdfConverter();
-
+            services.AddScoped<IJwtUtils, JwtUtils>();
+            services.AddScoped<ILDAPUtils, LDAPUtils>();
             services.AddScoped<IAuthService, AuthService>();
-
             services.AddScoped<IMasterConfigCacheService, MasterConfigCacheService>();
             services.AddScoped<IUserCacheService, UserCacheService>();
             services.AddCaches(AppSettings.Caching);
             services.AddRedisConnectionPool(AppSettings.Caching.Distributed.Redis.Configuration, Int32.Parse( AppSettings.Caching.Distributed.Redis.PoolSize ));
 
-            services.AddSwaggerGen();
 
+            services.AddSwaggerGen();
+            services.AddSaleOrderModule(AppSettings);
             // services.AddProductModule(AppSettings);
             // services.AddHostedServicesProductModule();
-
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //        .AddJwtBearer(options =>
-            //        {
-            //            options.Authority = AppSettings.IdentityServerAuthentication.Authority;
-            //            options.Audience = AppSettings.IdentityServerAuthentication.ApiName;
-            //            options.RequireHttpsMetadata = AppSettings.IdentityServerAuthentication.RequireHttpsMetadata;
-            //        });
-
+            
+            
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IAppLogger, AppLogger>();
+
 
             //services.AddDaprClient();
         }
@@ -99,6 +122,8 @@ namespace Spl.Crm.SaleOrder
             //    app.MigrateProductDb();
             //});
 
+            app.UseRequestLocalization();
+
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
@@ -110,13 +135,23 @@ namespace Spl.Crm.SaleOrder
 
             app.UseCors("AllowAnyOrigin");
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            // app.UseAuthentication();
+            // app.UseAuthorization();
+            
+            // global error handler
+            //app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+            app.UseGlobalExceptionHandlerMiddleware();
+            app.UseMiddleware<JwtMiddleware>();
+            
+            
+
+            app.UseMiddleware<LogMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 
