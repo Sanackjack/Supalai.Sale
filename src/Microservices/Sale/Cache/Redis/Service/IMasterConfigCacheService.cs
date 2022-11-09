@@ -1,7 +1,6 @@
 ﻿namespace Spl.Crm.SaleOrder.Cache.Redis.Service;
 
-public interface IMasterConfigCacheService
+public interface IMasterConfigCacheService : IRedisCacheService
 {
-    public void DeleteMasterConfig(string table, string key);
-    public T? GetMasterConfig<T>(string table, string key);
+
 }

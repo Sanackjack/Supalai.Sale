@@ -2,17 +2,16 @@
 {
     public class RedisConfigModel
     {
-        private string defaultTimeExpire = "480";
-        private string defaultSlidingExpire = "60";
-        private string masterConfigAbsoluteExpiration = "24:00:00";
+
+        //private string MasterConfigTimeExpire = "24:00:00";
+        private string masterConfigTimeExpire = "480";
+        private string masterConfgiSlidingExpire = "480";
         private string userTimeExpire = "480";
         private string userSlidingExpire = "480";
 
-        public string DefaultTimeExpire { get => defaultTimeExpire; set => defaultTimeExpire = value; }
+        public string MasterConfigTimeExpire { get => masterConfigTimeExpire; set => masterConfigTimeExpire = value; }
 
-        public string DefaultSlidingExpire { get => defaultSlidingExpire; set => defaultSlidingExpire = value; }
-
-        public string MasterConfigAbsoluteExpiration { get => masterConfigAbsoluteExpiration; set => masterConfigAbsoluteExpiration = value; }
+        public string MasterConfigSlidingExpire { get => masterConfgiSlidingExpire; set => masterConfgiSlidingExpire = value; }
 
         public string UserTimeExpire { get => userTimeExpire; set => userTimeExpire = value; }
 

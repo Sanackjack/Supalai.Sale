@@ -18,16 +18,18 @@ namespace Spl.Crm.SaleOrder.Cache.Redis.Service.implement
 
         protected RedisConfigModel redisConfig;
 
-        public RedisCacheService(IConfiguration configuration, IDistributedCache cache)
+        protected RedisCacheService(IConfiguration configuration, IDistributedCache cache)
         {
             _cache = cache;
             redisConfig = configuration.GetSection("Caching:Distributed:Redis:Config").Get<RedisConfigModel>();
         }
 
+        public abstract string Prefix { get; }
         public abstract void Delete(string key);
         public abstract T Get<T>(string key);
         public abstract void Refresh(string key);
-        public abstract void Set<T>(string key, T value);
+        public abstract void Set<T>(string key, T value, int expireTime = 0, int refreshTime = 0);
+
     }
 
 

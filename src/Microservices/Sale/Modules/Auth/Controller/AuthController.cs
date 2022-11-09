@@ -24,21 +24,18 @@ public class AuthController : BaseApiController
 
     private readonly IAuthService _authservice;
     private readonly IAppLogger _logger;
-    private readonly IStringLocalizer<LocalizeResource> localizer;
-    private IMasterConfigCacheService masterConfigCache;
-    private IUserCacheService userCacheService;
+    private readonly IStringLocalizer<LocalizeResource> _localizer;
+    private readonly IUserCacheService _userCacheService;
 
     public AuthController(IAppLogger _logger,
                             IStringLocalizer<LocalizeResource> localizeResource
                                 ,IAuthService authService,
-                                    IMasterConfigCacheService masterConfigCache,
                                         IUserCacheService userCacheService)
     {
         this._logger = _logger ;
-        this.localizer = localizeResource;
+        this._localizer = localizeResource;
         this._authservice = authService;
-        this.masterConfigCache = masterConfigCache;
-        this.userCacheService = userCacheService;
+        this._userCacheService = userCacheService;
     }
     
     [AllowAnonymous]
@@ -62,19 +59,21 @@ public class AuthController : BaseApiController
     public IActionResult localize()
     {
 
-        var article = localizer["Article"]; 
+        var article = _localizer["Article"]; 
         _logger.Debug("Hello from GetLog");
         return Ok(new { PostType = article.Value });
     }
-    
+
+    [AllowAnonymous]
     [HttpGet("redis")]
     public IActionResult addRedisData()
     {
 
-         var val = userCacheService.Get<string>("UserCacheService");
-         //userCacheService.Set("UserCacheService", "value");
-         //userCacheService.Refresh("UserCacheService");
-
+        //var val = _userCacheService.Get<string>("UserCacheService");
+        //Debug.WriteLine(val);
+        _userCacheService.Set("UserCacheService", "Value", 5 , 2);
+        //_userCacheService.Refresh("UserCacheService");
+        //_userCacheService.Delete("UserCacheService");
 
         return new OkObjectResult("okay");
     }
