@@ -27,15 +27,15 @@ public class AuthController : BaseApiController
     private readonly IStringLocalizer<LocalizeResource> localizer;
     private IMasterConfigCacheService masterConfigCache;
     private IUserCacheService userCacheService;
+
     public AuthController(IAppLogger _logger,
                             IStringLocalizer<LocalizeResource> localizeResource
-                                ,IAuthService authService, IAuthService authservice
+                                ,IAuthService authService,
                                     IMasterConfigCacheService masterConfigCache,
                                         IUserCacheService userCacheService)
     {
         this._logger = _logger ;
         this.localizer = localizeResource;
-        _authservice = authservice;
         this._authservice = authService;
         this.masterConfigCache = masterConfigCache;
         this.userCacheService = userCacheService;
