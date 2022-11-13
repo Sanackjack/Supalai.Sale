@@ -61,12 +61,5 @@ public class MasterDataService  :IMasterDataService
     {
        return _blobStorageUtils.GetContentJsonFromBlob(containerName, sourceFileName);
     }
-
-    public void CheckData()
-    {
-        Console.WriteLine("Check _unitAssetTypeDatas Master Data"+_unitAssetTypeDatas.Count);
-        
-        Console.WriteLine("Check  _unitStatusTypeDatas Master Data"+_unitStatusTypeDatas.Count);
-        
-    }
+    
 }

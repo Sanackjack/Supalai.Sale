@@ -5,5 +5,4 @@ public interface IMasterDataService
     void InitialMasterData();
     void ResetMasterData();
     
-    void CheckData();
 }
