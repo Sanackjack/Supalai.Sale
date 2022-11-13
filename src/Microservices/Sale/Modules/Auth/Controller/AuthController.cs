@@ -57,28 +57,4 @@ public class AuthController : BaseApiController
         
         return new OkObjectResult(_authservice.RefreshToken(token));
     }
-
-    [HttpGet]
-    [Route("localize")]
-    public IActionResult localize()
-    {
-
-        var article = _localizer["Article"]; 
-        _logger.Debug("Hello from GetLog");
-        return Ok(new { PostType = article.Value });
-    }
-
-    [AllowAnonymous]
-    [HttpGet("redis")]
-    public IActionResult addRedisData()
-    {
-
-        //var val = _userCacheService.Get<string>("UserCacheService");
-        //Debug.WriteLine(val);
-        _userCacheService.Set("UserCacheService", "Value", 5 , 2);
-        //_userCacheService.Refresh("UserCacheService");
-        //_userCacheService.Delete("UserCacheService");
-
-        return new OkObjectResult("okay");
-    }
 }

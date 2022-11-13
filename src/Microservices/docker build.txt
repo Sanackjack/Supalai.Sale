@@ -18,6 +18,9 @@ docker build -f "Services.Product\ClassifiedAds.Services.Product.Api\Dockerfile"
 
 docker build -f "Services.Storage\ClassifiedAds.Services.Storage.Api\Dockerfile" -t classifiedads.services.storage.api .
 
+docker build -f "Sale\Dockerfile" -t spl.crm.saleorder .
+
+
 --- Push ---
 
 docker tag classifiedads.gateways.webapi phongnguyend/classifiedads.gateways.webapi
