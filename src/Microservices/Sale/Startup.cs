@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using System.Net.Mime;
+using ClassifiedAds.Infrastructure.Azure.Blob;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using ClassifiedAds.Infrastructure.Logging;
@@ -22,6 +23,7 @@ using Spl.Crm.SaleOrder.Cache.Redis.Service.implement;
 using Spl.Crm.SaleOrder.Cache.Redis.Service;
 using System.Reflection;
 using StackExchange.Redis.ConnectionPool.DependencyInject;
+using Spl.Crm.SaleOrder.Modules.MasterData.Service;
 
 namespace Spl.Crm.SaleOrder
 {
@@ -100,13 +102,16 @@ namespace Spl.Crm.SaleOrder
             services.AddDinkToPdfConverter();
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<ILDAPUtils, LDAPUtils>();
+            services.AddScoped<IBlobStorageUtils, BlobStorageUtils>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IMasterDataService, MasterDataService>();
+            
             services.AddScoped<IMasterConfigCacheService, MasterConfigCacheService>();
             services.AddScoped<IUserCacheService, UserCacheService>();
             services.AddCaches(AppSettings.Caching);
             services.AddRedisConnectionPool(AppSettings.Caching.Distributed.Redis.Configuration, Int32.Parse( AppSettings.Caching.Distributed.Redis.PoolSize ));
 
-
+            
             services.AddSwaggerGen();
             services.AddSaleOrderModule(AppSettings);
             // services.AddProductModule(AppSettings);
@@ -116,11 +121,13 @@ namespace Spl.Crm.SaleOrder
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IAppLogger, AppLogger>();
 
+            services.AddRazorPages();
+            services.AddHostedService<MasterDataScheduleService>();
 
             //services.AddDaprClient();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env ,IMasterDataService masterDataService)
         {
             //Policy.Handle<Exception>().WaitAndRetry(new[]
             //{
@@ -132,7 +139,8 @@ namespace Spl.Crm.SaleOrder
             //{
             //    app.MigrateProductDb();
             //});
-
+            
+            masterDataService.InitialMasterData();
             app.UseRequestLocalization();
 
             if (env.IsDevelopment())
