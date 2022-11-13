@@ -10,6 +10,7 @@ using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 using ClassifiedAds.Domain.Uow;
 using ClassifiedAds.Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
+using Spl.Crm.SaleOrder.Cache.Redis.Service;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 
@@ -26,6 +27,7 @@ public class AuthServiceTest
     private Mock<ISysAdminRoleRepository> _sysAdminRoleRepositoryMock;
     private Mock<ISaleOrderRepository> _saleOrderRepositoryMock;
     private Mock<IUnitOfWork> _uowMock;
+    private Mock<IUserCacheService> _userCacheServiceMock;
     public AuthServiceTest()
     {
         _jwtUtilsMock = new Mock<IJwtUtils>();
@@ -35,12 +37,16 @@ public class AuthServiceTest
         _sysAdminUserRepositoryMock = new Mock<ISysAdminUserRepository>();
         _sysAdminRoleRepositoryMock = new Mock<ISysAdminRoleRepository>();
         _saleOrderRepositoryMock = new Mock<ISaleOrderRepository>();
+        _userCacheServiceMock = new Mock<IUserCacheService>();
         _uowMock = new Mock<IUnitOfWork>();
         _service = new AuthService(_configurationMock.Object, _jwtUtilsMock.Object,
             _ldapUtilsMock.Object, _sysAdminUserRepositoryMock.Object, _uowMock.Object,
             _sysAdminRoleRepositoryMock.Object,
-            _saleOrderRepositoryMock.Object, _loggerMock.Object);
+            _saleOrderRepositoryMock.Object, _loggerMock.Object,
+            _userCacheServiceMock.Object);
 
+        //arrange config global
+        _configurationMock.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Expire")]).Returns("2");   
     }
     
     [Fact]
@@ -61,8 +67,9 @@ public class AuthServiceTest
         listSysUserInfo.Add(sysUserInfo);
         _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>())).Returns(listSysUserInfo);
 
-        _jwtUtilsMock.Setup(p => p.GenerateJwtToken(It.IsAny<TokenInfo>())).Returns("token1234567890");
-        _jwtUtilsMock.Setup(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>())).Returns("refresh_token1234567890");
+        _jwtUtilsMock.Setup(p => p.GenerateJwtToken(It.IsAny<TokenInfo>())).Returns("token1234567890.payload.signature");
+        _jwtUtilsMock.Setup(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>())).Returns("refresh_token1234567890.payload.signature");
+        
         
         //act
         var result = _service.Login(new LoginRequest()
@@ -77,9 +84,14 @@ public class AuthServiceTest
 
         var data = result?.data as LoginResponse;
         Assert.NotNull(data);
-        Assert.Equal("token1234567890", data?.token);
-        Assert.Equal("refresh_token1234567890", data?.refresh_token);
+        Assert.Equal("token1234567890.payload.signature", data?.token);
+        Assert.Equal("refresh_token1234567890.payload.signature", data?.refresh_token);
         Assert.NotNull(data?.user_info);
+        
+        //Verify
+        _userCacheServiceMock.Verify(p => p.Delete(It.IsAny<string>()),Times.Once);
+        _userCacheServiceMock.Verify(p => p.Set(It.IsAny<string>(),It.IsAny<string>(),It.IsAny<int>(),It.IsAny<int>()),Times.Once);
+
     }
     
     [Fact]
@@ -161,8 +173,8 @@ public class AuthServiceTest
         listSysUserInfo.Add(sysUserInfo);
         _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>())).Returns(listSysUserInfo);
 
-        _jwtUtilsMock.Setup(p => p.GenerateJwtToken(It.IsAny<TokenInfo>())).Returns("token1234567890");
-        _jwtUtilsMock.Setup(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>())).Returns("refresh_token1234567890");
+        _jwtUtilsMock.Setup(p => p.GenerateJwtToken(It.IsAny<TokenInfo>())).Returns("token1234567890.payload.signature");
+        _jwtUtilsMock.Setup(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>())).Returns("refresh_token1234567890.payload.signature");
         
         //act
         var result = _service.RefreshToken(new TokenInfo());
@@ -173,8 +185,12 @@ public class AuthServiceTest
 
         var data = result?.data as RefreshTokenResponse;
         Assert.NotNull(data);
-        Assert.Equal("token1234567890", data?.token);
-        Assert.Equal("refresh_token1234567890", data?.refresh_token);
+        Assert.Equal("token1234567890.payload.signature", data?.token);
+        Assert.Equal("refresh_token1234567890.payload.signature", data?.refresh_token);
+        //Verify
+        _userCacheServiceMock.Verify(p => p.Delete(It.IsAny<string>()),Times.Once);
+        _userCacheServiceMock.Verify(p => p.Set(It.IsAny<string>(),It.IsAny<string>(),It.IsAny<int>(),It.IsAny<int>()),Times.Once);
+
     }
     
     [Fact]

@@ -7,6 +7,7 @@ using ClassifiedAds.Infrastructure.LDAP;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 using ClassifiedAds.Domain.Uow;
 using ClassifiedAds.Infrastructure.Logging;
+using Spl.Crm.SaleOrder.Cache.Redis.Service;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Service;
@@ -21,8 +22,9 @@ public class AuthService : IAuthService
     private readonly ISysAdminRoleRepository _sysAdminRoleRepository;
     private readonly ISaleOrderRepository _saleOrderRepository;
     private readonly IUnitOfWork _uow;
+    private readonly IUserCacheService _userCacheService;
     
-    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository, ISaleOrderRepository saleOrderRepository, IAppLogger logger)
+    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository, ISaleOrderRepository saleOrderRepository, IAppLogger logger, IUserCacheService userCacheService)
     {
         _configuration = configuration;
         _jwtUtils = jwtUtils;
@@ -31,6 +33,7 @@ public class AuthService : IAuthService
         _sysAdminRoleRepository = sysAdminRoleRepository;
         _saleOrderRepository = saleOrderRepository;
         _logger = logger;
+        _userCacheService = userCacheService;
         _uow = uow;
     }
 
@@ -44,18 +47,18 @@ public class AuthService : IAuthService
        if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
        
-       UserInfo userInfo = BuildUserInfo(sysUserinfo);
-       
        _logger.Info("Build JWT Token");
-        TokenInfo tokenInfo = BuildTokenInfo(userInfo);
-        LoginResponse response = new LoginResponse();
-        response.token = _jwtUtils.GenerateJwtToken(tokenInfo);;
-        response.refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo);;
-        response.user_info = userInfo;
+       UserInfo userInfo = BuildUserInfo(sysUserinfo);
+       TokenInfo tokenInfo = BuildTokenInfo(userInfo);
+       LoginResponse response = new LoginResponse()
+        {
+            token = _jwtUtils.GenerateJwtToken(tokenInfo),
+            refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo),
+            user_info = userInfo
+        };
         
-        _logger.Info("Create new Session In Redis");
-        //terminate old session in redis
-        
+       ManageSessionUserAuthen(tokenInfo.user_id,response.token);
+
         return new BaseResponse(new StatusResponse(), response);
     }
 
@@ -65,9 +68,9 @@ public class AuthService : IAuthService
         var sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(token.username);
         if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
-        UserInfo userInfo = BuildUserInfo(sysUserinfo);
-        
+
         _logger.Info("Build JWT Token");
+        UserInfo userInfo = BuildUserInfo(sysUserinfo);
         TokenInfo tokenInfo = BuildTokenInfo(userInfo);
         RefreshTokenResponse response = new RefreshTokenResponse()
         {
@@ -75,7 +78,8 @@ public class AuthService : IAuthService
             refresh_token = _jwtUtils.GenerateRefreshToken(tokenInfo)
         };
         
-        _logger.Info(string.Format("Create new Session In Redis of username {0}",token.username));
+        ManageSessionUserAuthen(tokenInfo.user_id,response.token);
+        
         return new BaseResponse(new StatusResponse(), response);
     }
 
@@ -103,5 +107,14 @@ public class AuthService : IAuthService
             username = sysUserinfo[0].Username,
             role_name = sysUserinfo.Select(s => { return s.RoleName;}).ToList()
         };
+    }
+
+    private void ManageSessionUserAuthen(string userId , string token)
+    {
+        _logger.Info(string.Format("Terminate session with userId is {0} Create new Session In Redis",userId));
+        var expireTimeHour = _configuration["JwtSettings:Expire"];
+        _userCacheService.Delete(userId);
+        _userCacheService.Set(userId, token.Split(".")[1], int.Parse(expireTimeHour)*60 , 0);
+
     }
 }

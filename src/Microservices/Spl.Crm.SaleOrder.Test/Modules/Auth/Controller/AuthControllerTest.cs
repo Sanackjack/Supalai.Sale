@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Moq;
+using Spl.Crm.SaleOrder.Cache.Redis.Service;
 using Spl.Crm.SaleOrder.Modules.Auth.Controller;
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
@@ -18,13 +19,15 @@ public class AuthControllerTest
     private Mock<IAuthService> _iAuthServiceMock;
     private Mock<IAppLogger> _iAppLoggerMock;
     private Mock<IStringLocalizer<LocalizeResource>> _iLocalizerMock;
+    private Mock<IUserCacheService> _userCacheServiceMock;
     
     public AuthControllerTest() {
         //setup
         _iAuthServiceMock = new Mock<IAuthService>();
         _iAppLoggerMock = new Mock<IAppLogger>();
         _iLocalizerMock = new Mock<IStringLocalizer<LocalizeResource>>();
-        _controller = new AuthController(_iAppLoggerMock.Object,_iLocalizerMock.Object,_iAuthServiceMock.Object);
+        _userCacheServiceMock = new Mock<IUserCacheService>();
+        _controller = new AuthController(_iAppLoggerMock.Object,_iLocalizerMock.Object,_iAuthServiceMock.Object,_userCacheServiceMock.Object);
     }
 
 
