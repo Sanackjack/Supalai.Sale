@@ -7,6 +7,7 @@ using ClassifiedAds.Infrastructure.LDAP;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 using ClassifiedAds.Domain.Uow;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
+using Twilio.Jwt.AccessToken;
 
 namespace Spl.Crm.SaleOrder.Modules.Auth.Service;
 
@@ -100,4 +101,11 @@ public class AuthService : IAuthService
             role_name = new string[] { sysUserinfo.RoleName }
         };
     }
+
+    public BaseResponse getUser()
+    {
+        SysUserInfo? sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName("pimpaka.pie");
+        return new BaseResponse(new StatusResponse(), sysUserinfo);
+    }
+
 }

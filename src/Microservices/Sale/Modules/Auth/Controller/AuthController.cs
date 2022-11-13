@@ -46,11 +46,9 @@ public class AuthController : BaseApiController
 
     [HttpGet]
     [Route("localize")]
+    [AllowAnonymous]
     public IActionResult localize()
     {
-
-        var article = localizer["Article"]; 
-        _logger.Debug("Hello from GetLog");
-        return Ok(new { PostType = article.Value });
+        return Ok(new { UserId = _authservice.getUser() });
     }
 }
