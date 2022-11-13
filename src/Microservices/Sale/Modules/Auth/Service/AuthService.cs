@@ -40,7 +40,7 @@ public class AuthService : IAuthService
     public BaseResponse Login(LoginRequest login)
     {
         _logger.Info("Authentication LDAP"); 
-       // _ldapUtils.CheckUserLoginLdap(login.username, login.password);
+        _ldapUtils.CheckUserLoginLdap(login.username, login.password);
        
        _logger.Info("Authentication DataBase");
        var sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(login.username);
