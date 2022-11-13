@@ -12,10 +12,13 @@ using ClassifiedAds.Infrastructure.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
+using System.Net.Mime;
+using ClassifiedAds.Infrastructure.Azure.Blob;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using ClassifiedAds.Infrastructure.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Spl.Crm.SaleOrder.Modules.MasterData.Service;
 
 namespace Spl.Crm.SaleOrder
 {
@@ -85,8 +88,12 @@ namespace Spl.Crm.SaleOrder
             services.AddDinkToPdfConverter();
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<ILDAPUtils, LDAPUtils>();
+            services.AddScoped<IBlobStorageUtils, BlobStorageUtils>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<IMasterDataService, MasterDataService>();
+            
+            
+            //services.
             services.AddSwaggerGen();
             services.AddSaleOrderModule(AppSettings);
             // services.AddProductModule(AppSettings);
@@ -96,11 +103,13 @@ namespace Spl.Crm.SaleOrder
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IAppLogger, AppLogger>();
 
+            services.AddRazorPages();
+            services.AddHostedService<MasterDataScheduleService>();
 
             //services.AddDaprClient();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env ,IMasterDataService masterDataService)
         {
             //Policy.Handle<Exception>().WaitAndRetry(new[]
             //{
@@ -112,7 +121,8 @@ namespace Spl.Crm.SaleOrder
             //{
             //    app.MigrateProductDb();
             //});
-
+            
+            masterDataService.InitialMasterData();
             app.UseRequestLocalization();
 
             if (env.IsDevelopment())
