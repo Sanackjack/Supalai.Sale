@@ -6,6 +6,11 @@ using ClassifiedAds.Infrastructure.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Spl.Crm.SaleOrder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Spl.Crm.SaleOrder.Cache.Redis.Service;
+using Spl.Crm.SaleOrder.Cache.Redis.Service.implement;
+
 using Spl.Crm.SaleOrder.Modules.Auth.Model;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 using Spl.Crm.SaleOrder.ConfigurationOptions;
@@ -17,17 +22,24 @@ namespace Spl.Crm.SaleOrder.Modules.Auth.Controller;
 [Authorize]
 public class AuthController : BaseApiController
 {
+
     private readonly IAuthService _authservice;
     private readonly IAppLogger _logger;
-    private readonly IStringLocalizer<LocalizeResource> localizer;
+    private readonly IStringLocalizer<LocalizeResource> _localizer;
+    private readonly IUserCacheService _userCacheService;
+
     public AuthController(IAppLogger _logger,
-                            IStringLocalizer<LocalizeResource> localizeResource
-                                ,IAuthService authService)
+                            IStringLocalizer<LocalizeResource> localizeResource,
+                            IAuthService authService,
+                            IUserCacheService userCacheService)
     {
         this._logger = _logger ;
-        this.localizer = localizeResource;
+        this._logger = _logger ;
+        this._localizer = localizeResource;
         this._authservice = authService;
+        this._userCacheService = userCacheService;
     }
+    
     [AllowAnonymous]
     [ValidateModel]
     [HttpPost("authentication")]
@@ -51,8 +63,22 @@ public class AuthController : BaseApiController
     public IActionResult localize()
     {
 
-        var article = localizer["Article"]; 
+        var article = _localizer["Article"]; 
         _logger.Debug("Hello from GetLog");
         return Ok(new { PostType = article.Value });
+    }
+
+    [AllowAnonymous]
+    [HttpGet("redis")]
+    public IActionResult addRedisData()
+    {
+
+        //var val = _userCacheService.Get<string>("UserCacheService");
+        //Debug.WriteLine(val);
+        _userCacheService.Set("UserCacheService", "Value", 5 , 2);
+        //_userCacheService.Refresh("UserCacheService");
+        //_userCacheService.Delete("UserCacheService");
+
+        return new OkObjectResult("okay");
     }
 }

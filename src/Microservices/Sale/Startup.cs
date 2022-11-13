@@ -18,6 +18,10 @@ using Microsoft.AspNetCore.Http;
 using ClassifiedAds.Infrastructure.Logging;
 using ClassifiedAds.Infrastructure.ValidateModelAttribute;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Spl.Crm.SaleOrder.Cache.Redis.Service.implement;
+using Spl.Crm.SaleOrder.Cache.Redis.Service;
+using System.Reflection;
+using StackExchange.Redis.ConnectionPool.DependencyInject;
 
 namespace Spl.Crm.SaleOrder
 {
@@ -97,6 +101,11 @@ namespace Spl.Crm.SaleOrder
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<ILDAPUtils, LDAPUtils>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IMasterConfigCacheService, MasterConfigCacheService>();
+            services.AddScoped<IUserCacheService, UserCacheService>();
+            services.AddCaches(AppSettings.Caching);
+            services.AddRedisConnectionPool(AppSettings.Caching.Distributed.Redis.Configuration, Int32.Parse( AppSettings.Caching.Distributed.Redis.PoolSize ));
+
 
             services.AddSwaggerGen();
             services.AddSaleOrderModule(AppSettings);
