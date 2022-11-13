@@ -24,6 +24,7 @@ using Spl.Crm.SaleOrder.Cache.Redis.Service;
 using System.Reflection;
 using StackExchange.Redis.ConnectionPool.DependencyInject;
 using Spl.Crm.SaleOrder.Modules.MasterData.Service;
+using Spl.Crm.SaleOrder.Modules.Project.Service;
 
 namespace Spl.Crm.SaleOrder
 {
@@ -80,9 +81,13 @@ namespace Spl.Crm.SaleOrder
                 };
             });
             services.AddControllers(configure =>
-            {
-                configure.Filters.Add(typeof(GlobalExceptionFilter));
-            });
+                    {
+                        configure.Filters.Add(typeof(GlobalExceptionFilter));
+                    })
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                    });
 
             services.AddCors(options =>
             {
@@ -104,6 +109,7 @@ namespace Spl.Crm.SaleOrder
             services.AddScoped<ILDAPUtils, LDAPUtils>();
             services.AddScoped<IBlobStorageUtils, BlobStorageUtils>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IMasterDataService, MasterDataService>();
             
             services.AddScoped<IMasterConfigCacheService, MasterConfigCacheService>();

@@ -16,11 +16,13 @@ public class SaleOrderDBContext : DbContext
     
     public DbSet<SysAdminUser> SysAdminUser { get; set; }
     public DbSet<SysAdminRole> SysAdminRole { get; set; }
-    
-    
+    public DbSet<SysMasterProjects> SysMasterProjects { get; set; }
+
+
     //customModel
     public DbSet<SysUserInfo> SysUserInfo { get; set; }
-
+    public DbSet<ProjectUnits> ProjectUnits { get; set; }
+    public DbSet<ProjectSummary> ProjectSummary { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
