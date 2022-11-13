@@ -43,12 +43,4 @@ public class AuthController : BaseApiController
         var response = _authservice.RefreshToken(token);
         return new OkObjectResult(response);
     }
-
-    [HttpGet]
-    [Route("localize")]
-    [AllowAnonymous]
-    public IActionResult localize()
-    {
-        return Ok(new { UserId = _authservice.getUser() });
-    }
 }

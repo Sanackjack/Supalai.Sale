@@ -8,5 +8,4 @@ public interface IAuthService
 {
     BaseResponse Login(LoginRequest login);
     BaseResponse RefreshToken(TokenInfo token);
-    BaseResponse getUser();
 }

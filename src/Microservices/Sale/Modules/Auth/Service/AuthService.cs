@@ -101,11 +101,4 @@ public class AuthService : IAuthService
             role_name = new string[] { sysUserinfo.RoleName }
         };
     }
-
-    public BaseResponse getUser()
-    {
-        SysUserInfo? sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName("pimpaka.pie");
-        return new BaseResponse(new StatusResponse(), sysUserinfo);
-    }
-
 }
