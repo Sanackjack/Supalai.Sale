@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
+using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories.Impl;
 
 namespace Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 

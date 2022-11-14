@@ -2,7 +2,7 @@ using ClassifiedAds.Domain.Entities;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
 using Spl.Crm.SaleOrder.Modules.Project.Model;
 
-namespace Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
+namespace Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories.Impl;
 
 public interface IProjectRepository
 {

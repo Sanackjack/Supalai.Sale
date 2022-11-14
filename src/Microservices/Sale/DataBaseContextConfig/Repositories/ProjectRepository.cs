@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
 using Spl.Crm.SaleOrder.Modules.Project.Model;
 using System.Reflection.Emit;
+using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories.Impl;
 
 namespace Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 

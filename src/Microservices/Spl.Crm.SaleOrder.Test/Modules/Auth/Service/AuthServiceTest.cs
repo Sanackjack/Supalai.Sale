@@ -12,6 +12,7 @@ using ClassifiedAds.Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
 using Spl.Crm.SaleOrder.Cache.Redis.Service;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
+using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories.Impl;
 using Spl.Crm.SaleOrder.Modules.Auth.Service;
 
 namespace Spl.Crm.SaleOrder.Test.Modules.Auth.Service;

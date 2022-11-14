@@ -4,6 +4,7 @@ using Spl.Crm.SaleOrder.ConfigurationOptions;
 using Spl.Crm.SaleOrder.DataBaseContextConfig;
 using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories;
 using ClassifiedAds.Domain.Uow;
+using Spl.Crm.SaleOrder.DataBaseContextConfig.Repositories.Impl;
 using IUnitOfWork = ClassifiedAds.Domain.Uow.IUnitOfWork;
 
 namespace Spl.Crm.SaleOrder;
