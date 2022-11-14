@@ -1,0 +1,12 @@
+version: "3.6"
+services:
+    sale:
+        image: spl.crm.saleorder
+        build:
+          context: .
+          dockerfile: ./Sale/Dockerfile
+        environment:
+          ASPNETCORE_ENVIRONMENT: "Production"
+          ASPNETCORE_URLS: "http://*:4172;"
+        ports:
+          - "4172:4172"

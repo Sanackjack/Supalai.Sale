@@ -3,20 +3,15 @@ using ClassifiedAds.CrossCuttingConcerns.Constants;
 using ClassifiedAds.CrossCuttingConcerns.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Threading;
+
+using ClassifiedAds.Infrastructure.Logging;
 
 namespace ClassifiedAds.Infrastructure.Web.Filters
 {
     public class GlobalExceptionFilter : IExceptionFilter
     {
-        private readonly ILogger<GlobalExceptionFilter> _logger;
-
-        public GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger)
+        private readonly IAppLogger _logger;
+        public GlobalExceptionFilter(IAppLogger logger)
         {
             _logger = logger;
         }
@@ -65,7 +60,7 @@ namespace ClassifiedAds.Infrastructure.Web.Filters
 
                         if (e.exception != null)
                         {
-                            _logger.LogError(e.exception, e.exception.Message);
+                            _logger.Error(e.exception.Message);
                         }
 
                         break;
@@ -73,6 +68,7 @@ namespace ClassifiedAds.Infrastructure.Web.Filters
                         code = ResponseData.SYSTEM_ERROR.Code;
                         msg = ResponseData.SYSTEM_ERROR.Message;
                         httpStatus = ResponseData.SYSTEM_ERROR.HttpStatus;
+                        _logger.Error(context.Exception.Message);
                         break;
                 }
 

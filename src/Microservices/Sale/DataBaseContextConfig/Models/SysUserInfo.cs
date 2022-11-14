@@ -1,3 +1,8 @@
+//using System.ComponentModel.DataAnnotations.Schema;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
 namespace Spl.Crm.SaleOrder.DataBaseContextConfig.Models;
 
 public class SysUserInfo
@@ -15,11 +20,11 @@ public class SysUserInfo
    public string? Gender { get; set; }
    public string? Phone { get; set; }
    public string? Mobile { get; set; }
-   public bool IsDelete { get; set; }
-   public bool IsSuperUser { get; set; }
-   public bool isOutSource { get; set; }
+   public bool? IsDelete { get; set; }
+   public bool? IsSuperUser { get; set; }
+   public bool? isOutSource { get; set; }
    public string? BUCode { get; set; }
    public string? BUName { get; set; }
    public string? RoleName { get; set; }
-   public bool isSystemRole { get; set; }
+   public bool? isSystemRole { get; set; }
 }

@@ -12,18 +12,33 @@ using ClassifiedAds.Infrastructure.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
+using System.Net.Mime;
+using ClassifiedAds.Infrastructure.Azure.Blob;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using ClassifiedAds.Infrastructure.Logging;
+using ClassifiedAds.Infrastructure.ValidateModelAttribute;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Spl.Crm.SaleOrder.Cache.Redis.Service.implement;
+using Spl.Crm.SaleOrder.Cache.Redis.Service;
+using System.Reflection;
+using StackExchange.Redis.ConnectionPool.DependencyInject;
+using Spl.Crm.SaleOrder.Modules.MasterData.Service;
+using Spl.Crm.SaleOrder.Modules.Project.Service;
 
 namespace Spl.Crm.SaleOrder
 {
     public class Startup
 	{
-        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                            .SetBasePath(env.ContentRootPath)
+                            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true)
+                            .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
 
             AppSettings = new AppSettings();
             Configuration.Bind(AppSettings);
@@ -62,10 +77,23 @@ namespace Spl.Crm.SaleOrder
                     opts.SupportedUICultures = supportedCultures;
                 });
 
-            services.AddControllers(configure =>
+            services.AddControllers().ConfigureApiBehaviorOptions(options =>
             {
-                configure.Filters.Add(typeof(GlobalExceptionFilter));
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var result = new ValidationFailedResult(context.ModelState);
+                    result.ContentTypes.Add(MediaTypeNames.Application.Json); 
+                    return result;
+                };
             });
+            services.AddControllers(configure =>
+                    {
+                        configure.Filters.Add(typeof(GlobalExceptionFilter));
+                    })
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                    });
 
             services.AddCors(options =>
             {
@@ -85,8 +113,17 @@ namespace Spl.Crm.SaleOrder
             services.AddDinkToPdfConverter();
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<ILDAPUtils, LDAPUtils>();
+            services.AddScoped<IBlobStorageUtils, BlobStorageUtils>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IMasterDataService, MasterDataService>();
+            
+            services.AddScoped<IMasterConfigCacheService, MasterConfigCacheService>();
+            services.AddScoped<IUserCacheService, UserCacheService>();
+            services.AddCaches(AppSettings.Caching);
+            services.AddRedisConnectionPool(AppSettings.Caching.Distributed.Redis.Configuration, Int32.Parse( AppSettings.Caching.Distributed.Redis.PoolSize ));
 
+            
             services.AddSwaggerGen();
             services.AddSaleOrderModule(AppSettings);
             // services.AddProductModule(AppSettings);
@@ -96,11 +133,13 @@ namespace Spl.Crm.SaleOrder
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IAppLogger, AppLogger>();
 
+            services.AddRazorPages();
+            services.AddHostedService<MasterDataScheduleService>();
 
             //services.AddDaprClient();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env ,IMasterDataService masterDataService)
         {
             //Policy.Handle<Exception>().WaitAndRetry(new[]
             //{
@@ -112,7 +151,8 @@ namespace Spl.Crm.SaleOrder
             //{
             //    app.MigrateProductDb();
             //});
-
+            
+            masterDataService.InitialMasterData();
             app.UseRequestLocalization();
 
             if (env.IsDevelopment())

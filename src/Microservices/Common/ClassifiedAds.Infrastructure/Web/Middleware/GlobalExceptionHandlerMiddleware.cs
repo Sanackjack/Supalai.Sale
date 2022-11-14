@@ -8,17 +8,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedAds.CrossCuttingConcerns.BaseResponse;
 using ClassifiedAds.CrossCuttingConcerns.Constants;
+using ClassifiedAds.Infrastructure.Logging;
 
 namespace ClassifiedAds.Infrastructure.Web.Middleware
 {
     public class GlobalExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
+        private readonly IAppLogger _logger;
         private readonly GlobalExceptionHandlerMiddlewareOptions _options;
 
         public GlobalExceptionHandlerMiddleware(RequestDelegate next,
-            ILogger<GlobalExceptionHandlerMiddleware> logger,
+            IAppLogger logger,
             GlobalExceptionHandlerMiddlewareOptions options)
         {
             _next = next;
@@ -76,7 +77,7 @@ namespace ClassifiedAds.Infrastructure.Web.Middleware
 
                         if (e.exception != null)
                         {
-                            _logger.LogError(e.exception, e.exception.Message);
+                            _logger.Error(e.exception.Message);
                         }
 
                         break;
@@ -84,6 +85,7 @@ namespace ClassifiedAds.Infrastructure.Web.Middleware
                         code = ResponseData.SYSTEM_ERROR.Code;
                         msg = ResponseData.SYSTEM_ERROR.Message;
                         httpStatus = ResponseData.SYSTEM_ERROR.HttpStatus;
+                        _logger.Error(ex.Message);
                         break;
                 }
 

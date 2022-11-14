@@ -18,10 +18,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Novell.Directory.Ldap.NETStandard" Version="3.6.0" />
+    <PackageReference Include="StackExchange.Redis.ConnectionPool" Version="1.0.1" />
+    <PackageReference Include="Sgbj.Cron.CronTimer" Version="1.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="logs\" />
+    <Folder Include="Cache\Redis\Configuration\" />
     <Folder Include="Modules\Booking\Controller" />
     <Folder Include="Modules\Booking\Service" />
     <Folder Include="Modules\Customer\Controller" />

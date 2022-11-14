@@ -18,15 +18,15 @@ namespace Spl.Crm.SaleOrder.ConfigurationOptions
 
         public MonitoringOptions Monitoring { get; set; }
         public DistributedTracingOptions DistributedTracing { get; set; }
-        
+
         public StorageOptions Storage { get; set; }
 
         public MessageBrokerOptions MessageBroker { get; set; }
 
         public InterceptorsOptions Interceptors { get; set; }
-        
+
         public JwtSettings JwtSettings { get; set; }
-        
+
         public LDAPSettings LDAPSettings { get; set; }
     }
 
@@ -37,16 +37,35 @@ namespace Spl.Crm.SaleOrder.ConfigurationOptions
         public string MigrationsAssembly { get; set; }
     }
 
-    public class JwtSettings{
+    public class JwtSettings
+    {
         public string Key { get; set; }
         public string Issuer { get; set; }
         public string Audience { get; set; }
         public string Expire { get; set; }
     }
-    public class LDAPSettings{
+
+    public class LDAPSettings
+    {
         public string LDAPHost { get; set; }
         public string LDAPPath { get; set; }
         public string LDAPDomain { get; set; }
     }
-}
 
+    public class BlobStorage
+    {
+        public string DefaultConnection { get; set; }
+        public string DurationTrigger { get; set; }
+        public string ContainerName { get; set; }
+        public string MasterFileName { get; set; }
+
+    }
+
+    public class MasterFileName
+    {
+        public string UnitAssetType { get; set; }
+        public string UnitStatusType { get; set; }
+        public string ProjectAssetType { get; set; }
+        public string CountryCode { get; set; }
+    }
+}

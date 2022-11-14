@@ -29,10 +29,22 @@ namespace ClassifiedAds.Infrastructure.Logging
 
         private void Log(LogLevel level, string? message, string? className)
         {
-            var remoteHost = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+            var remoteHost = "locahost";
+            string username = null;
+            string correlationId = null;
+            if (_context.HttpContext != null)
+            {
+                 remoteHost = _context.HttpContext.Connection.RemoteIpAddress?.ToString();
+                 username = _context.HttpContext.Items["TokenInfo"] != null ? ((TokenInfo)_context.HttpContext.Items["TokenInfo"]).username : "Anonymous";
+                 correlationId = _context.HttpContext.TraceIdentifier;
+            }
+            else
+            {
+                 username = "Anonymous";
+                 correlationId = Guid.NewGuid().ToString();
+            }
+
             string currTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mmzzz");
-            string username = _context.HttpContext.Items["TokenInfo"] != null ? ((TokenInfo)_context.HttpContext.Items["TokenInfo"]).username : "Anonymous";
-            string correlationId = _context.HttpContext.TraceIdentifier;
             string buildMsg = string.Join("|", new string[] { currTime, level.ToString() , "spl-om-backend", correlationId, remoteHost, username, className, "message: " + message });
 
             _log.Log(level, buildMsg, null);

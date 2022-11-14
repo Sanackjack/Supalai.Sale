@@ -12,6 +12,7 @@ public class BaseApiController : ControllerBase
        TokenInfo? tokenInfo = (TokenInfo)HttpContext.Items["TokenInfo"]!;
        return tokenInfo !=null ? tokenInfo.user_id:"Anonymous";
     }
+    
     public TokenInfo GetTokenInfoFromContext()
     {
         return (TokenInfo)HttpContext.Items["TokenInfo"]!;
