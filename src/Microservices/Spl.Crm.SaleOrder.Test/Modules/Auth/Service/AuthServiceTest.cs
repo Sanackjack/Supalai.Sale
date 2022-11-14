@@ -26,7 +26,7 @@ public class AuthServiceTest
     private Mock<IConfiguration> _configurationMock;
     private Mock<ISysAdminUserRepository> _sysAdminUserRepositoryMock;
     private Mock<ISysAdminRoleRepository> _sysAdminRoleRepositoryMock;
-    private Mock<ISaleOrderRepository> _saleOrderRepositoryMock;
+    private Mock<IAuthCustomRepository> _authCustomRepositoryMock;
     private Mock<IUnitOfWork> _uowMock;
     private Mock<IUserCacheService> _userCacheServiceMock;
     public AuthServiceTest()
@@ -37,13 +37,13 @@ public class AuthServiceTest
         _configurationMock = new Mock<IConfiguration>();
         _sysAdminUserRepositoryMock = new Mock<ISysAdminUserRepository>();
         _sysAdminRoleRepositoryMock = new Mock<ISysAdminRoleRepository>();
-        _saleOrderRepositoryMock = new Mock<ISaleOrderRepository>();
+        _authCustomRepositoryMock = new Mock<IAuthCustomRepository>();
         _userCacheServiceMock = new Mock<IUserCacheService>();
         _uowMock = new Mock<IUnitOfWork>();
         _service = new AuthService(_configurationMock.Object, _jwtUtilsMock.Object,
             _ldapUtilsMock.Object, _sysAdminUserRepositoryMock.Object, _uowMock.Object,
             _sysAdminRoleRepositoryMock.Object,
-            _saleOrderRepositoryMock.Object, _loggerMock.Object,
+            _authCustomRepositoryMock.Object, _loggerMock.Object,
             _userCacheServiceMock.Object);
 
         //arrange config global
@@ -66,7 +66,7 @@ public class AuthServiceTest
         
         List<SysUserInfo> listSysUserInfo = new List<SysUserInfo>();
         listSysUserInfo.Add(sysUserInfo);
-        _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>())).Returns(listSysUserInfo);
+        _authCustomRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>())).Returns(listSysUserInfo);
 
         _jwtUtilsMock.Setup(p => p.GenerateJwtToken(It.IsAny<TokenInfo>())).Returns("token1234567890.payload.signature");
         _jwtUtilsMock.Setup(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>())).Returns("refresh_token1234567890.payload.signature");
@@ -120,7 +120,7 @@ public class AuthServiceTest
          Assert.Equal(ResponseData.INCORRECT_USERNAME_PASSWORD.HttpStatus, error?.httpStatus);
         }
         //Verify
-        _saleOrderRepositoryMock.Verify(m => m.FindSysUserInfoRawSqlByUserName("invalid"),Times.Never);
+        _authCustomRepositoryMock.Verify(m => m.FindSysUserInfoRawSqlByUserName("invalid"),Times.Never);
         _jwtUtilsMock.Verify(p => p.GenerateJwtToken(It.IsAny<TokenInfo>()),Times.Never);
         _jwtUtilsMock.Verify(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>()),Times.Never);
     }
@@ -130,7 +130,7 @@ public class AuthServiceTest
     {
         //arrange
         _ldapUtilsMock.Setup(p => p.CheckUserLoginLdap(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-        _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>()))
+        _authCustomRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>()))
             .Returns(null as List<SysUserInfo>);
  
         //act
@@ -172,7 +172,7 @@ public class AuthServiceTest
         };
         List<SysUserInfo> listSysUserInfo = new List<SysUserInfo>();
         listSysUserInfo.Add(sysUserInfo);
-        _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>())).Returns(listSysUserInfo);
+        _authCustomRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>())).Returns(listSysUserInfo);
 
         _jwtUtilsMock.Setup(p => p.GenerateJwtToken(It.IsAny<TokenInfo>())).Returns("token1234567890.payload.signature");
         _jwtUtilsMock.Setup(p => p.GenerateRefreshToken(It.IsAny<TokenInfo>())).Returns("refresh_token1234567890.payload.signature");
@@ -199,7 +199,7 @@ public class AuthServiceTest
     {
         //arrange
         _ldapUtilsMock.Setup(p => p.CheckUserLoginLdap(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-        _saleOrderRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>()))
+        _authCustomRepositoryMock.Setup(p => p.FindSysUserInfoRawSqlByUserName(It.IsAny<string>()))
             .Returns(null as List<SysUserInfo>);
  
         //act

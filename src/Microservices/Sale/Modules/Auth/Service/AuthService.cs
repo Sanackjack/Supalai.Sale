@@ -22,18 +22,18 @@ public class AuthService : IAuthService
     private readonly IConfiguration _configuration;
     private readonly ISysAdminUserRepository _sysAdminUserRepository;
     private readonly ISysAdminRoleRepository _sysAdminRoleRepository;
-    private readonly ISaleOrderRepository _saleOrderRepository;
+    private readonly IAuthCustomRepository _authCustomRepository;
     private readonly IUnitOfWork _uow;
     private readonly IUserCacheService _userCacheService;
     
-    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository, ISaleOrderRepository saleOrderRepository, IAppLogger logger, IUserCacheService userCacheService)
+    public AuthService(IConfiguration configuration,IJwtUtils jwtUtils, ILDAPUtils ldapUtils,ISysAdminUserRepository sysAdminUserRepository, IUnitOfWork uow, ISysAdminRoleRepository sysAdminRoleRepository, IAuthCustomRepository authCustomRepository, IAppLogger logger, IUserCacheService userCacheService)
     {
         _configuration = configuration;
         _jwtUtils = jwtUtils;
         _ldapUtils = ldapUtils;
         _sysAdminUserRepository = sysAdminUserRepository;
         _sysAdminRoleRepository = sysAdminRoleRepository;
-        _saleOrderRepository = saleOrderRepository;
+        _authCustomRepository = authCustomRepository;
         _logger = logger;
         _userCacheService = userCacheService;
         _uow = uow;
@@ -45,7 +45,7 @@ public class AuthService : IAuthService
         _ldapUtils.CheckUserLoginLdap(login.username, login.password);
        
        _logger.Info("Authentication DataBase");
-       var sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(login.username);
+       var sysUserinfo = _authCustomRepository.FindSysUserInfoRawSqlByUserName(login.username);
        if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
        
@@ -67,7 +67,7 @@ public class AuthService : IAuthService
     public BaseResponse RefreshToken(TokenInfo token)
     {
         _logger.Info("Authentication DataBase");
-        var sysUserinfo = _saleOrderRepository.FindSysUserInfoRawSqlByUserName(token.username);
+        var sysUserinfo = _authCustomRepository.FindSysUserInfoRawSqlByUserName(token.username);
         if (sysUserinfo == null)
             throw new AuthenicationErrorException(ResponseData.INCORRECT_USERNAME_PASSWORD);
 
