@@ -1,16 +1,5 @@
 ## Ignore the Migrations folder for now since this repo is for learning and testing purposes
 ## We don't want to mess things up with lot of migration files anytime we make changes to the database structure.
-/src/Monolith/ClassifiedAds.Persistence/Migrations/
-/src/Monolith/ClassifiedAds.Migrator/Migrations/
-/src/ModularMonolith/ClassifiedAds.Migrator/Migrations/
-/src/Microservices/Services.AuditLog/ClassifiedAds.Services.AuditLog.Api/Migrations/
-/src/Microservices/Services.Configuration/ClassifiedAds.Services.Configuration.Api/Migrations/
-/src/Microservices/Services.Identity/ClassifiedAds.Services.Identity.Api/Migrations/
-/src/Microservices/Services.Identity/ClassifiedAds.Services.Identity.AuthServer/Migrations/
-/src/Microservices/Services.Notification/ClassifiedAds.Services.Notification.Api/Migrations/
-/src/Microservices/Services.Product/ClassifiedAds.Services.Product.Api/Migrations/
-/src/Microservices/Services.Storage/ClassifiedAds.Services.Storage.Api/Migrations/
-/src/UIs/reactjs/.eslintcache
 .tye/
 .local-chromium/
 .sonarqube/
