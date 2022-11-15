@@ -1,6 +1,0 @@
-﻿Add-Migration -Context ConfigurationDbContext Init -OutputDir Migrations/ConfigurationDb
-
-Remove-Migration -Context ConfigurationDbContext
-Remove-Migration -Context ConfigurationDbContext -Force
-
-Update-Database -Context ConfigurationDbContext
