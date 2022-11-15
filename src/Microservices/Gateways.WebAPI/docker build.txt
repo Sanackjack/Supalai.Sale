@@ -1,5 +1,0 @@
-
-
-docker build -f "ClassifiedAds.Gateways.WebAPI\Dockerfile" -t classifiedads.gateways.webapi ../
-
-docker run -d -p 8080:80 --name classifiedads.gateways.webapi classifiedads.gateways.webapi
