@@ -6,7 +6,7 @@ pipeline {
   stages {
     stage('Git Checkout') {
       steps {
-        git branch: 'master', url: 'https://github.com/phongnguyend/Practical.CleanArchitecture'
+        git branch: 'master', url: 'https://github.com/atgt-spl/Supalai.Sale'
       }
     }
     stage('Build') {
@@ -23,18 +23,7 @@ pipeline {
     stage('Publish') {
       steps {
         dir('src/Microservices') {
-          sh "dotnet publish -p:Version=${VERSION} Gateways.WebAPI/ClassifiedAds.Gateways.WebAPI/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.AuditLog/ClassifiedAds.Services.AuditLog.Api/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.AuditLog/ClassifiedAds.Services.AuditLog.Grpc/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Configuration/ClassifiedAds.Services.Configuration.Api/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Identity/ClassifiedAds.Services.Identity.Api/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Identity/ClassifiedAds.Services.Identity.AuthServer/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Identity/ClassifiedAds.Services.Identity.Grpc/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Notification/ClassifiedAds.Services.Notification.Api/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Notification/ClassifiedAds.Services.Notification.Background/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Notification/ClassifiedAds.Services.Notification.Grpc/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Product/ClassifiedAds.Services.Product.Api/*.csproj --configuration Release"
-          sh "dotnet publish -p:Version=${VERSION} Services.Storage/ClassifiedAds.Services.Storage.Api/*.csproj --configuration Release"
+          sh "dotnet publish -p:Version=${VERSION} Services.SaleOrder/ClassifiedAds.Services.SaleOrder.Api/*.csproj --configuration Release"
         }
       }
     }
